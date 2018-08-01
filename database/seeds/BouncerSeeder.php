@@ -11,7 +11,7 @@ class BouncerSeeder extends Seeder
      */
     public function run()
     {
-//        Bouncer::allow('superadmin')->everything();
+        Bouncer::allow('superadmin')->everything();
 //
 //        Bouncer::allow('admin')->everything();
 //        Bouncer::forbid('admin')->toManage(\App\User::class);
@@ -22,6 +22,6 @@ class BouncerSeeder extends Seeder
         
        // Bouncer::allow('editor')->to('update');
         
-        Bouncer::allow('editor')->toOwn(\App\Post::class)->to(['view', 'update']);
+        // Bouncer::allow('editor')->toOwn(\App\Post::class)->to(['view', 'update']);
     }
 }
