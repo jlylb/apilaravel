@@ -38,7 +38,14 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = json_decode($request->getContent(), true);
+        var_dump($data);
+        $ability = Bouncer::ability()->firstOrCreate($data);
+        if($ability){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     /**

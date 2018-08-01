@@ -21,8 +21,8 @@ Route::group([
     'namespace'=>'admin',
     'prefix'=>'admin',
     'middleware'=>[
-        // 'auth',
-       // 'permission'
+        'auth',
+       'permission'
     ]
 ], function () {
     Route::resource('users', 'UserController');

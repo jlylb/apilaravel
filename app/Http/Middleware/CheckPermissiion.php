@@ -29,10 +29,10 @@ class CheckPermissiion
 
     protected function getPermissionName($route) {
         $curAction = $route->getActionName();
-        $curPrefix = $route->getPrefix();
+        $curPrefix = trim($route->getPrefix(),'/');
         $prefix = [];
         if($curPrefix) {
-            $prefix = explode('/', $curPrefix);
+            $prefix = array_filter(explode('/', $curPrefix));
         }
         $curAction = explode('\\', $curAction);
 

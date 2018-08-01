@@ -157,6 +157,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         
         Silber\Bouncer\BouncerServiceProvider::class,
+        
+        Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 
@@ -205,6 +207,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Bouncer' => Silber\Bouncer\BouncerFacade::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
     ],
 

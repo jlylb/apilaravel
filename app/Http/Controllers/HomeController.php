@@ -24,8 +24,9 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $request->user()->can('*');
         return view('home');
     }
 
@@ -38,7 +39,7 @@ class HomeController extends Controller
     {
         foreach(Route::getRoutes() as $route){
             $curAction = $route->getActionName();
-            $curPrefix = $route->getPrefix();
+            $curPrefix = trim($route->getPrefix(),'/');
             $prefix = [];
             if($curPrefix) {
                 $prefix = explode('/', $curPrefix);
