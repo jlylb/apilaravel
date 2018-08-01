@@ -26,7 +26,8 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $request->user()->can('*');
+        $res = $request->user()->getAbilities()->toArray();
+        // var_dump($res);
         return view('home');
     }
 

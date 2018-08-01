@@ -4,9 +4,9 @@ namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Bouncer;
+use App\Menu;
 
-class PermissionController extends Controller
+class MenuController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,8 +16,8 @@ class PermissionController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
-        $permissions = Bouncer::ability()->paginate($perPage);
-        return ['status' => 1, 'data'=>$permissions];
+        $menu = Menu::paginate($perPage);
+        return ['status' => 1, 'data'=>$menu];
     }
 
     /**
@@ -38,9 +38,9 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-        $ability = Bouncer::ability()->firstOrCreate($data);
-        if($ability){
+        $data = array_except(json_decode($request->getContent(), true), 'action');
+        $menu = Menu::firstOrCreate($data);
+        if($menu){
             return ['status' => 1, 'msg'=>'successful'];
         }else{
             return ['status' => 0, 'msg'=>'fail'];
@@ -78,7 +78,13 @@ class PermissionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = array_except(json_decode($request->getContent(), true), 'action');
+        $menu = Menu::findOrFail($id);
+        if($menu->update($data)){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     /**
@@ -89,6 +95,11 @@ class PermissionController extends Controller
      */
     public function destroy($id)
     {
-        
+        $menu = Menu::findOrFail($id);
+        if($menu->delete()){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 }
