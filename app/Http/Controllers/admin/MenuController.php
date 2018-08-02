@@ -27,7 +27,12 @@ class MenuController extends Controller
      */
     public function create()
     {
-        //
+        $cats=new \App\Menu();
+        $lists=$cats->getTreeCategory();
+        return json_encode(['status'=>1,'data'=>[
+                'pid'=>$lists
+            ]
+        ]);
     }
 
     /**
@@ -39,8 +44,13 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         $data = array_except(json_decode($request->getContent(), true), 'action');
+        $parentId=$data['pid'];
+        $data['pid']=end($parentId);
         $menu = Menu::firstOrCreate($data);
         if($menu){
+            $path=array_merge($parentId,[$menu->id]);
+            $menu->path=implode('-',$path);
+            $menu->save();
             return ['status' => 1, 'msg'=>'successful'];
         }else{
             return ['status' => 0, 'msg'=>'fail'];
@@ -55,7 +65,12 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        //
+        $cats=new \App\Menu();
+        $lists=$cats->getTreeCategory([$id]);
+        return ['status'=>1,'data'=>[
+                'pid'=>$lists
+            ]
+        ];
     }
 
     /**
@@ -80,7 +95,25 @@ class MenuController extends Controller
     {
         $data = array_except(json_decode($request->getContent(), true), 'action');
         $menu = Menu::findOrFail($id);
+ 
+        $sourcePid=$menu->pid;
+        $spid=$data['pid'];
+        $parentId=end($data['pid']);
+        $data['pid']=$parentId;
+        $data['path']=implode('-',array_merge($spid,[$id]));
+        $spath=$menu->path;
+
+        // $this->validate($request,[
+        //     'name' => 'required|unique:categories,name,'.$id.',|max:255',
+        //     'name_en' => 'required|unique:categories,name,'.$id.',|max:255',
+        //     'parent_id' => 'required',
+        // ]);
+
+
         if($menu->update($data)){
+            if($sourcePid!=$parentId){
+                $menu-->updateChildren($spath,$data['path']);
+            }
             return ['status' => 1, 'msg'=>'successful'];
         }else{
             return ['status' => 0, 'msg'=>'fail'];

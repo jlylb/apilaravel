@@ -11,12 +11,12 @@
 |
 */
 
-Route::get('/', 'HomeController@welcome');
+Route::get('/', 'HomeController@welcome')->name('welcome');
 
 Route::auth();
 
-Route::get('/home', 'HomeController@index');
-Route::get('/ro', 'HomeController@genPermission');
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/ro', 'HomeController@genPermission')->name('ro');
 
 Route::group([
     'namespace'=>'admin',

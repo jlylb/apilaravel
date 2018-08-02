@@ -23,10 +23,10 @@ Route::group([
 
 ], function () {
 
-    Route::post('login', 'AuthController@login');
-    Route::post('logout', 'AuthController@logout');
-    Route::post('refresh', 'AuthController@refresh');
-    Route::get('me', 'AuthController@me');
+    Route::post('login', 'AuthController@login')->name('api.auth.login');
+    Route::post('logout', 'AuthController@logout')->name('api.auth.logout');
+    Route::post('refresh', 'AuthController@refresh')->name('api.auth.refresh');
+    Route::get('me', 'AuthController@me')->name('api.auth.me');
 
 });
 
@@ -45,6 +45,7 @@ Route::group([
     Route::get('roles/{role}/ability', 'RoleController@getRoleAbilities');
     Route::put('roles/{role}/ability', 'RoleController@saveRoleAbility');
     Route::resource('permission', 'PermissionController');
+    Route::get('permission/{name}/search', 'PermissionController@search');
     Route::resource('menu', 'MenuController');
 });
 

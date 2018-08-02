@@ -26,7 +26,7 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $res = $request->user()->getAbilities()->toArray();
+      //  $res = $request->user()->getAbilities()->toArray();
         // var_dump($res);
         return view('home');
     }
@@ -39,22 +39,33 @@ class HomeController extends Controller
     public function genPermission()
     {
         foreach(Route::getRoutes() as $route){
-            $curAction = $route->getActionName();
-            $curPrefix = trim($route->getPrefix(),'/');
-            $prefix = [];
-            if($curPrefix) {
-                $prefix = explode('/', $curPrefix);
-            }
-            $curAction = explode('\\', $curAction);
+            // $curAction = $route->getActionName();
+            // $curPrefix = trim($route->getPrefix(),'/');
+            // $prefix = [];
+            // if($curPrefix) {
+            //     $prefix = explode('/', $curPrefix);
+            // }
+            // $curAction = explode('\\', $curAction);
 
-            $controller = strtolower(str_replace('Controller', '', end($curAction)));
-            $actions = array_merge($prefix, explode('@', $controller));
-            $name = implode('_', $actions);
-            $title = implode(' ', $actions);
+            // $controller = strtolower(str_replace('Controller', '', end($curAction)));
+            // $actions = array_merge($prefix, explode('@', $controller));
+            // $name = implode('_', $actions);
+            // $title = implode(' ', $actions);
+
+            $routeName = $route->getName();
+
+            if(!$routeName) {
+                continue;
+            }
+            $routePath = $route->getPath();
+            $title = str_replace('.', ' ', $routeName);
+
+            // var_dump($routeName, $routePath, $title);
 
             Bouncer::ability()->firstOrCreate([
-                'name' => $name,
+                'name' => $routeName,
                 'title' => $title,
+                'route_path' => $routePath
             ]);
         }
     }

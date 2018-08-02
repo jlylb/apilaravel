@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Bouncer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
         // $app['Dingo\Api\Auth\Auth']->extend('oauth', function ($app) {
         //     return new Dingo\Api\Auth\Provider\JWT($app['Tymon\JWTAuth\JWTAuth']);
         //  });
+        Bouncer::useAbilityModel(\App\Ability::class);
     }
 
     /**

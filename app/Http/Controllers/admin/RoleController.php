@@ -110,7 +110,7 @@ class RoleController extends Controller
             if($name == '*'){
                 continue;
             }
-            $group = substr($name, 0, strrpos($name,'_'));
+            $group = substr($name, 0, strrpos($name,'.'));
             if(empty($group)){
                 $group = $name;
             }
