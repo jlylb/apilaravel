@@ -26,8 +26,10 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-      //  $res = $request->user()->getAbilities()->toArray();
-        // var_dump($res);
+      $res = $request->user()->getAbilities()->pluck('name')->toArray();
+        //var_dump($res);
+              $menu = \App\Menu::whereIn('route_name', $res)
+                ->orWhere('route_name', '=', '*')->get()->toArray();
         return view('home');
     }
 
@@ -53,6 +55,7 @@ class HomeController extends Controller
             // $title = implode(' ', $actions);
 
             $routeName = $route->getName();
+            $curPrefix = trim($route->getPrefix(),'/')?:'';
 
             if(!$routeName) {
                 continue;
@@ -65,7 +68,7 @@ class HomeController extends Controller
             Bouncer::ability()->firstOrCreate([
                 'name' => $routeName,
                 'title' => $title,
-                'route_path' => $routePath
+                'route_path' => '/'.trim(str_replace($curPrefix, '', $routePath), '/')
             ]);
         }
     }

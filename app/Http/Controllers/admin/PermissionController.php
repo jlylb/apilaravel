@@ -95,7 +95,7 @@ class PermissionController extends Controller
     public function search(Request $request, $name)
     {
         $query = Bouncer::ability();
-        $permissions = $query->where('name', 'like', $name.'%')
+        $permissions = $query->where('name', 'like', '%'.$name.'%')
         ->select('name as value', 'title as label', 'route_path')
         ->get();
         return ['status' => 1, 'data'=>$permissions];

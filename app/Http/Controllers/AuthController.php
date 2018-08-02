@@ -15,7 +15,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+       $this->middleware('auth:api', ['except' => ['login']]);
     }
 
     /**
@@ -49,7 +49,43 @@ class AuthController extends Controller
     {
         $user = auth()->user()->toArray();
         $user['roles'] = auth()->user()->roles()->get()->pluck('name');
-        return response()->json($user);
+        $ability = auth()->user()->getAbilities()->pluck('name')->toArray();
+        $lists = \App\Menu::whereIn('route_name', $ability)
+                ->orWhere('route_name', '=', '*')
+                ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden'])
+                ->get()
+                ->toArray();
+        //$routes = [];
+        foreach($lists as &$item) {
+            $item['meta']= json_decode($item['meta']);
+            if($item['name']=='*') {
+                unset($item['name']);
+            }
+        }
+        unset($item);
+        
+        
+        $refs = [];
+
+        foreach ($lists as $k => $v) {
+            $refs[$v['id']] = &$lists[$k];
+        }
+
+        $root = 0;
+        $routes = [];
+        foreach ($lists as $k => $v) {
+            $parentId = $v['pid'];
+            if ($root == $parentId) {
+                $routes[] = &$lists[$k];
+            } else {
+                if (isset($refs[$parentId])) {
+                    $parent = &$refs[$v['pid']];
+                    $parent['children'][] = &$lists[$k];
+                }
+            }
+        }
+        
+        return response()->json(compact('routes','user'));
     }
 
     /**

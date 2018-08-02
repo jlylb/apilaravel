@@ -112,7 +112,7 @@ class MenuController extends Controller
 
         if($menu->update($data)){
             if($sourcePid!=$parentId){
-                $menu-->updateChildren($spath,$data['path']);
+                $menu->updateChildren($spath,$data['path']);
             }
             return ['status' => 1, 'msg'=>'successful'];
         }else{

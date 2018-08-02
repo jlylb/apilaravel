@@ -32,9 +32,9 @@ Route::group([
 
 Route::group([
     'namespace'=>'admin',
-    'prefix'=>'admin',
+    'prefix'=>'',
     'middleware'=>[
-        'auth',
+       'auth:api',
        'permission'
     ]
 ], function () {

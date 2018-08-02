@@ -3,11 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class Menu extends Model
 {
     protected $fillable = [
-        'route_path', 'route_name', 'component', 'redirect', 'meta', 'pid', 'path', 'name'
+        'route_path', 'route_name', 'component', 'redirect', 'meta', 'pid', 'path', 'hidden','name'
     ];
     
     public function setMetaAttribute($value) {
@@ -56,7 +57,6 @@ class Menu extends Model
     }
 
     public function updateChildren($sourcePath,$ppath){
-        DB::connection()->enableQueryLog();
         $this->where('path', 'like', $sourcePath.'%')->update([
             'path'=>DB::raw('replace(path,"'.$sourcePath.'","'.$ppath.'")')
         ]);
