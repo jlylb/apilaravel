@@ -35,7 +35,7 @@ Route::group([
     'prefix'=>'',
     'middleware'=>[
        'auth:api',
-       'permission'
+    //    'permission'
     ]
 ], function () {
     Route::resource('users', 'UserController');
@@ -48,6 +48,7 @@ Route::group([
     Route::get('permission/{name}/search', 'PermissionController@search');
     Route::resource('menu', 'MenuController');
     Route::post('menu/{menu}/buttons', 'MenuController@createButton');
+    Route::resource('company', 'CompanyController');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

@@ -16,7 +16,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
 
     /**
@@ -55,6 +55,9 @@ class HomeController extends Controller
             // $title = implode(' ', $actions);
 
             $routeName = $route->getName();
+            if(strpos($routeName,'company')===false){
+                continue;
+            }
             $curPrefix = trim($route->getPrefix(),'/')?:'';
 
             if(!$routeName) {
