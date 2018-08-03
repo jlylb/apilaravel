@@ -26,7 +26,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         // $credentials = request(['name', 'password']);
-         $post = json_decode($request->getContent(),true);
+         $post = $request->input();
          
          $credentials = [
              'name' => $post['username'],
@@ -52,7 +52,7 @@ class AuthController extends Controller
         $ability = auth()->user()->getAbilities()->pluck('name')->toArray();
         $lists = \App\Menu::whereIn('route_name', $ability)
                 ->orWhere('route_name', '=', '*')
-                ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden'])
+                ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden', 'buttons'])
                 ->get()
                 ->toArray();
         //$routes = [];
@@ -85,7 +85,7 @@ class AuthController extends Controller
             }
         }
         
-        return response()->json(compact('routes','user'));
+        return response()->json(compact('routes','user', 'ability'));
     }
 
     /**

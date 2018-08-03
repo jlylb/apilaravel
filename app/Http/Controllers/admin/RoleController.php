@@ -17,7 +17,16 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
-        $roles = Bouncer::Role()->paginate($perPage);
+        $name = $request->input('name', '');
+        $query = Bouncer::Role()->query();
+        if(!empty($name)) {
+            $query->where('name', 'like', $name.'%');
+        }
+        $created = $request->input('created_at', []);
+        if(!empty($created)) {
+            $query->whereBetween('created_at', $created);
+        }
+        $roles = $query->paginate($perPage);
         return ['status' => 1, 'data'=>$roles];
     }
 
@@ -39,7 +48,17 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->input();
+        $this->validate($request, [
+            'name' => 'required|unique:roles|max:155',
+            'title' => 'required|max:255',
+        ]);
+        $ability = Bouncer::role()->create($data);
+        if($ability){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     /**
@@ -73,7 +92,17 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->input();
+        $this->validate($request, [
+            'name' => 'required|unique:roles,name,'.$id.'|max:155',
+            'title' => 'required|max:255',
+        ]);
+        $ability = Bouncer::role()->findOrFail($id);
+        if($ability->update($data)){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     /**
@@ -84,7 +113,12 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $ability = Bouncer::role()->findOrFail($id);
+        if($ability->delete()){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     public function getRoleAbilities($role)

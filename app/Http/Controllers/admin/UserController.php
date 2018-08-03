@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use  Bouncer;
+use Bouncer;
+use App\User;
 
 class UserController extends Controller
 {
@@ -18,7 +17,16 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
-        $users = \App\User::paginate($perPage);
+        $name = $request->input('name', '');
+        $query = User::query();
+        if(!empty($name)) {
+            $query->where('name', 'like', $name.'%');
+        }
+        $created = $request->input('created_at', []);
+        if(!empty($created)) {
+            $query->whereBetween('created_at', $created);
+        }
+        $users = $query->paginate($perPage);
         return ['status' => 1, 'data'=>$users];
     }
 
@@ -29,7 +37,6 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -40,7 +47,19 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+       $data = $request->input();
+       $this->validate($request, [
+            'name' => 'required|unique:users|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed|min:6',
+        ]);
+       $ret = User::create($data);
+       
+       if($ret){
+           return ['status' => 1, 'msg'=>'保存成功'];
+       }else{
+           return ['status' => 0, 'msg'=>'保存失败'];
+       }
     }
 
     /**
@@ -74,7 +93,19 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+       $user = User::findOrFail($id);
+       $data = $request->input();
+       $this->validate($request, [
+            'name' => 'required|unique:users,name,'.$id.'|max:255',
+            'email' => 'required|email|unique:users,email,'.$id
+        ]);
+       $ret = $user->update($data);
+       
+       if($ret){
+           return ['status' => 1, 'msg'=>'保存成功'];
+       }else{
+           return ['status' => 0, 'msg'=>'保存失败'];
+       }
     }
 
     /**
@@ -85,7 +116,12 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+       $user = User::findOrFail($id);
+       if($user->delete()){
+           return ['status' => 1, 'msg'=>'删除成功'];
+       }else{
+           return ['status' => 0, 'msg'=>'删除失败'];
+       }
     }
 
     public function getRoles($id)

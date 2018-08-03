@@ -16,7 +16,16 @@ class PermissionController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
-        $permissions = Bouncer::ability()->paginate($perPage);
+        $name = $request->input('name', '');
+        $query = Bouncer::ability()->query();
+        if(!empty($name)) {
+            $query->where('name', 'like', $name.'%');
+        }
+        $created = $request->input('created_at', []);
+        if(!empty($created)) {
+            $query->whereBetween('created_at', $created);
+        }
+        $permissions = $query->paginate($perPage);
         return ['status' => 1, 'data'=>$permissions];
     }
 
@@ -38,8 +47,12 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-        $ability = Bouncer::ability()->firstOrCreate($data);
+        $data = $request->input();
+        $this->validate($request, [
+            'name' => 'required|unique:permissions|max:155',
+            'title' => 'required|max:255',
+        ]);
+        $ability = Bouncer::ability()->create($data);
         if($ability){
             return ['status' => 1, 'msg'=>'successful'];
         }else{
@@ -78,7 +91,17 @@ class PermissionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->input();
+        $this->validate($request, [
+            'name' => 'required|unique:permissions,name,'.$id.'|max:155',
+            'title' => 'required|max:255',
+        ]);
+        $ability = Bouncer::ability()->findOrFail($id);
+        if($ability->update($data)){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     /**
@@ -89,7 +112,12 @@ class PermissionController extends Controller
      */
     public function destroy($id)
     {
-        
+        $ability = Bouncer::ability()->findOrFail($id);
+        if($ability->delete()){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     public function search(Request $request, $name)

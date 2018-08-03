@@ -47,6 +47,7 @@ Route::group([
     Route::resource('permission', 'PermissionController');
     Route::get('permission/{name}/search', 'PermissionController@search');
     Route::resource('menu', 'MenuController');
+    Route::post('menu/{menu}/buttons', 'MenuController@createButton');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

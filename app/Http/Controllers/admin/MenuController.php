@@ -16,7 +16,17 @@ class MenuController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
-        $menu = Menu::paginate($perPage);
+        $name = $request->input('route_name', '');
+        $query = Menu::query();
+        if(!empty($name)) {
+            $query->where('route_name', 'like', $name.'%');
+        }
+        $created = $request->input('created_at', []);
+        if(!empty($created)) {
+            $query->whereBetween('created_at', $created);
+        }
+       // echo $query->toSql();
+        $menu = $query->paginate($perPage);
         return ['status' => 1, 'data'=>$menu];
     }
 
@@ -46,7 +56,7 @@ class MenuController extends Controller
         $data = array_except(json_decode($request->getContent(), true), 'action');
         $parentId=$data['pid'];
         $data['pid']=end($parentId);
-        $menu = Menu::firstOrCreate($data);
+        $menu = Menu::create($data);
         if($menu){
             $path=array_merge($parentId,[$menu->id]);
             $menu->path=implode('-',$path);
@@ -130,6 +140,18 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
         if($menu->delete()){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
+    }
+    
+    public function createButton(Request $request,$id)
+    {
+        $menu = Menu::findOrFail($id);
+        $buttons = json_decode($request->getContent(), true);
+        $menu->buttons = $buttons['button'];
+        if($menu->save()){
             return ['status' => 1, 'msg'=>'successful'];
         }else{
             return ['status' => 0, 'msg'=>'fail'];
