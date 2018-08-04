@@ -8,7 +8,7 @@ use DB;
 class Menu extends Model
 {
     protected $fillable = [
-        'route_path', 'route_name', 'component', 'redirect', 'meta', 'pid', 'path', 'hidden','name'
+        'route_path', 'route_name', 'component', 'redirect', 'meta', 'pid', 'path', 'hidden','name','always_show'
     ];
     
     public function setMetaAttribute($value) {

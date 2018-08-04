@@ -50,7 +50,16 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->input();
+        $this->validate($request, [
+            'name'=>'required|max:150'
+        ]);
+        $ret = Company::create($data);
+        if($ret){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     /**
@@ -84,7 +93,17 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->input();
+        $this->validate($request, [
+            'name'=>'required|max:150'
+        ]);
+        $company = Company::find($id);
+        $ret = $company->update($data);
+        if($ret){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 
     /**
@@ -95,6 +114,11 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $company = Company::findOrFail($id);
+        if($company->delete()){
+            return ['status' => 1, 'msg'=>'successful'];
+        }else{
+            return ['status' => 0, 'msg'=>'fail'];
+        }
     }
 }

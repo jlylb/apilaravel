@@ -49,6 +49,7 @@ Route::group([
     Route::resource('menu', 'MenuController');
     Route::post('menu/{menu}/buttons', 'MenuController@createButton');
     Route::resource('company', 'CompanyController');
+    Route::post('upload', 'UploadController@store');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

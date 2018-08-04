@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
+use Storage;
 
 class UploadController extends Controller
 {
@@ -36,14 +37,15 @@ class UploadController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {   
+        $field = $request->input('field',config('upload.field'));
         $all = $request->all();
+        //var_dump($all,$request->all());
+        $config = config('upload.'.$field);
         $rules = [
-            'file'=>'required|file',
+           $field=>$config['rules'],
         ];
-        $messages = [
-            'file.required'=>'请选择要上传的文件'
-        ];
+        $messages = $config['messages'];
 
         $validator = Validator::make($all,$rules,$messages);
 
@@ -51,23 +53,29 @@ class UploadController extends Controller
             return new JsonResponse($this->formatValidationErrors($validator));
         }
 
-        $file=$request->file('file');
-        
+        $file=$request->file($field);
+
         $size = $file->getSize();
 
-        if($size > 2*1024*1024){
-            return new JsonResponse(['msg'=>'上传文件不能超过2M']);
+        if($size > $config['size']){
+            return new JsonResponse(['msg'=>'上传文件不能超过'.$config['size']]);
         }
 
         //文件类型
-        $mimeType = $file->getMimeType();
+        //$mimeType = $file->getMimeType();
 
         // if($mimeType != 'image/png'){
         //     return new JsonResponse(['msg'=>'只能上传png格式的图片']);
         // }
         //扩展文件名
         $ext = $file->getClientOriginalExtension();
-
+        
+        $exts = array_get($config, 'exts', []);
+        
+        if($exts && !in_array($ext,$exts)){
+            return new JsonResponse(['msg'=>'只允许上传此后缀的文件'. implode(',', $exts)]);
+        }
+        
 
         if(!$file->isValid()){
             return new JsonResponse(['msg'=>'非法操作']);
@@ -78,15 +86,22 @@ class UploadController extends Controller
 
         //上传文件
         $filename = uniqid().'.'.$ext;
-        $path = $file->storeAs(
-            'attach/'.$today, $filename,'upload'
+        $path =  'attach/'.$today.'/'.$filename;
+//        $path = $file->storeAs(
+//            'attach/'.$today, $filename,array_get($config, 'folder', 'local')
+//        );
+        Storage::disk('upload')->put(
+           $path,
+            file_get_contents($file->getRealPath())
         );
+        // $path = $file -> move(app_path().'/storage/uploads',$filename);
         return ['status'=>1,'msg'=>''
         ,'data'=>[
             'location'=>$path
-            ,'field'=>$request->input('field','avatar')
+            ,'field'=>$field
             ,'name'=>$filename
-            ,'url'=>'http://localhost:8000/storage/uploads/'.$path]];
+            ]
+        ];
 
     }
 

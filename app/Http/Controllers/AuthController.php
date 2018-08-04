@@ -52,7 +52,7 @@ class AuthController extends Controller
         $ability = auth()->user()->getAbilities()->pluck('name')->toArray();
         $lists = \App\Menu::whereIn('route_name', $ability)
                 ->orWhere('route_name', '=', '*')
-                ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden', 'buttons'])
+                ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden', 'buttons','always_show'])
                 ->get()
                 ->toArray();
         //$routes = [];
