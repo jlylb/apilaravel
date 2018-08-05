@@ -19,7 +19,8 @@ class CheckPermissiion
     public function handle($request, Closure $next)
     {
 
-        // $name = $this->getPermissionName(Route::getCurrentRoute());
+        $name = $this->getPermissionName(Route::getCurrentRoute());
+        $ret = Bouncer::can($name);
         // if(!Bouncer::can($name)) {
         //     return response()->json(['error' => 'Unauthenticated.'], 401);
         // }
@@ -28,7 +29,7 @@ class CheckPermissiion
     }
 
     protected function getPermissionName($route) {
-        $curAction = $route->name();
+        $name = $route->getName();
         return $name;
     }
 }

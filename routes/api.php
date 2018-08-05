@@ -26,7 +26,9 @@ Route::group([
     Route::post('login', 'AuthController@login')->name('api.auth.login');
     Route::post('logout', 'AuthController@logout')->name('api.auth.logout');
     Route::post('refresh', 'AuthController@refresh')->name('api.auth.refresh');
-    Route::get('me', 'AuthController@me')->name('api.auth.me');
+    Route::get('userinfo', 'AuthController@getUserInfo')->name('api.auth.getUserInfo');
+    Route::put('userinfo', 'AuthController@saveUserInfo')->name('api.auth.saveUserInfo');
+    Route::put('password', 'AuthController@modifyPassword')->name('api.auth.modifyPassword');
 
 });
 
@@ -35,7 +37,8 @@ Route::group([
     'prefix'=>'',
     'middleware'=>[
        'auth:api',
-    //    'permission'
+        'permission'
+        , 'scope'
     ]
 ], function () {
     Route::resource('users', 'UserController');

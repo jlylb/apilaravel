@@ -49,7 +49,7 @@ class PermissionController extends Controller
     {
         $data = $request->input();
         $this->validate($request, [
-            'name' => 'required|unique:permissions|max:155',
+            'name' => 'required|unique:abilities|max:155',
             'title' => 'required|max:255',
         ]);
         $ability = Bouncer::ability()->create($data);
@@ -93,7 +93,7 @@ class PermissionController extends Controller
     {
         $data = $request->input();
         $this->validate($request, [
-            'name' => 'required|unique:permissions,name,'.$id.'|max:155',
+            'name' => 'required|unique:abilities,name,'.$id.'|max:155',
             'title' => 'required|max:255',
         ]);
         $ability = Bouncer::ability()->findOrFail($id);

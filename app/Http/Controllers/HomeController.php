@@ -16,7 +16,11 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth');
+        $this->middleware([
+            'auth',
+            'permission'
+            , 'scope'
+            ]);
     }
 
     /**
@@ -30,6 +34,7 @@ class HomeController extends Controller
         //var_dump($res);
               $menu = \App\Menu::whereIn('route_name', $res)
                 ->orWhere('route_name', '=', '*')->get()->toArray();
+               // Bouncer::allow($request->user())->toOwn(\App\Menu::class)->to(['view', 'update']);
         return view('home');
     }
 
@@ -55,9 +60,9 @@ class HomeController extends Controller
             // $title = implode(' ', $actions);
 
             $routeName = $route->getName();
-            if(strpos($routeName,'company')===false){
-                continue;
-            }
+            // if(strpos($routeName,'company')===false){
+            //     continue;
+            // }
             $curPrefix = trim($route->getPrefix(),'/')?:'';
 
             if(!$routeName) {

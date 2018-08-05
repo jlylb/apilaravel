@@ -23,5 +23,8 @@ class BouncerSeeder extends Seeder
        // Bouncer::allow('editor')->to('update');
         
         // Bouncer::allow('editor')->toOwn(\App\Post::class)->to(['view', 'update']);
+        $user = \App\User::find(1);
+        Bouncer::allow($user)->toOwnEverything();
+        Bouncer::allow($user)->toOwnEverything()->to('view');
     }
 }

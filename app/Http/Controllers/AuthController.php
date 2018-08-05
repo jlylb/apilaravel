@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
+use Hash;
+use JWTAuth;
 
 class AuthController extends Controller
 {
@@ -33,7 +35,7 @@ class AuthController extends Controller
              'password' => $post['password'],
          ];
 
-        if (! $token = auth()->attempt($credentials)) {
+        if (! $token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -45,11 +47,11 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function me()
+    public function getUserInfo()
     {
-        $user = auth()->user()->toArray();
-        $user['roles'] = auth()->user()->roles()->get()->pluck('name');
-        $ability = auth()->user()->getAbilities()->pluck('name')->toArray();
+        $user = auth('api')->user()->toArray();
+        $user['roles'] = auth('api')->user()->roles()->get()->pluck('name');
+        $ability = auth('api')->user()->getAbilities()->pluck('name')->toArray();
         $lists = \App\Menu::whereIn('route_name', $ability)
                 ->orWhere('route_name', '=', '*')
                 ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden', 'buttons','always_show'])
@@ -95,7 +97,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        auth('api')->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -107,7 +109,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth()->refresh());
+        return $this->respondWithToken(auth('api')->refresh());
     }
 
     /**
@@ -122,7 +124,44 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth('api')->factory()->getTTL() * 60
         ]);
+    }
+
+
+    public function saveUserInfo(Request $request) {
+        $user = auth('api')->user();
+        $avatar = $request->input('logo', '');
+        $user->avatar = $avatar;
+        if($user->save()) {
+            return ['status'=>1, 'msg'=>'successful'];
+        }else{
+            return ['status'=>0, 'msg'=>'fail'];
+        }
+
+    }
+
+    public function modifyPassword(Request $request) {
+        $user = auth('api')->user();
+        $this->validate($request,[
+            'password' => 'required|min:6',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $password = $request->input('password');
+        $newPassword = $request->input('new_password');
+
+        if(!Hash::check($password, $user->password)){
+            return ['status'=>0, 'msg'=>'原密码不正确'];
+        }
+
+        $user->password = $newPassword ;
+        if($user->save()) {
+            JWTAuth::parseToken()->invalidate();
+            return ['status'=>1, 'msg'=>'successful'];
+        }else{
+            return ['status'=>0, 'msg'=>'fail'];
+        }
+
     }
 }
