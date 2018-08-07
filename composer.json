@@ -10,7 +10,8 @@
         "silber/bouncer": "v1.0.0-rc.1",
         "barryvdh/laravel-debugbar": "^2.4",
         "dingo/api": "1.0.x@dev",
-        "tymon/jwt-auth": "1.0.0.rc.2"
+        "tymon/jwt-auth": "1.0.0.rc.2",
+        "laravel-notification-channels/backport": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

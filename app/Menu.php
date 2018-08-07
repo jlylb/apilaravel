@@ -76,4 +76,12 @@ class Menu extends Model
             'path'=>DB::raw('replace(path,"'.$sourcePath.'","'.$ppath.'")')
         ]);
     }
+    
+    public function setComponentAttribute($value) {
+        $this->attributes['component'] = trim($value,'/');
+    }
+    
+    public function setRoutePathAttribute($value) {
+        $this->attributes['route_path'] = str_replace(['{','}'], [':',''], $value);
+    }
 }

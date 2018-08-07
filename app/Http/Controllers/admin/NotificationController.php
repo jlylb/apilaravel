@@ -6,14 +6,24 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Company;
+use Bouncer;
+use Illuminate\Notifications\DatabaseNotification;
+use Carbon\Carbon;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
-class CompanyController extends Controller
+
+class NotificationController extends Controller
 {
-    protected $message = [
-        'name.required' => '公司名称必须',
-        'name.max' => '公司名称不能超过150个字符',
-    ];
+    
+    protected function getQuery() {
+        $user = JWTAuth::user();
+        if(Bouncer::is($user)->a('superadmin')){
+            $query = DatabaseNotification::query();
+        }else{
+           $query = $user->notifications();
+        }
+        return $query;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -21,9 +31,9 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
+        $query = $this->getQuery();
         $perPage = $request->input('pageSize',15);
         $name = $request->input('name', '');
-        $query = Company::query();
         if(!empty($name)) {
             $query->where('name', 'like', $name.'%');
         }
@@ -31,9 +41,8 @@ class CompanyController extends Controller
         if(!empty($created)) {
             $query->whereBetween('created_at', $created);
         }
-       // echo $query->toSql();
-        $list = $query->paginate($perPage);
-        return ['status' => 1, 'data'=>$list];
+        $notification = $query->paginate($perPage);
+        return ['status' => 1, 'data'=>$notification];
     }
 
     /**
@@ -54,16 +63,7 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->input();
-        $this->validate($request, [
-            'name'=>'required|max:150'
-        ], $this->message);
-        $ret = Company::create($data);
-        if($ret){
-            return ['status' => 1, 'msg'=>'successful'];
-        }else{
-            return ['status' => 0, 'msg'=>'fail'];
-        }
+        //
     }
 
     /**
@@ -97,17 +97,7 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = $request->input();
-        $this->validate($request, [
-            'name'=>'required|max:150'
-        ], $this->message);
-        $company = Company::find($id);
-        $ret = $company->update($data);
-        if($ret){
-            return ['status' => 1, 'msg'=>'successful'];
-        }else{
-            return ['status' => 0, 'msg'=>'fail'];
-        }
+        //
     }
 
     /**
@@ -118,11 +108,44 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        $company = Company::findOrFail($id);
-        if($company->delete()){
-            return ['status' => 1, 'msg'=>'successful'];
+        $query = $this->getQuery();
+        $ret = $query->where('id', '=', $id)->delete();
+        if($ret){
+           return ['status' => 1, 'msg'=>'删除成功'];
+       }else{
+           return ['status' => 0, 'msg'=>'删除失败'];
+       }
+    }
+    
+    /**
+     * 已读
+     * @param integer $id
+     */
+    public function unread($id)
+    {
+        
+        $user = JWTAuth::user();
+        $ret = $user->unreadNotifications()->where('id', '=', $id)->update(['read_at' => Carbon::now()]);
+        if($ret){
+           return ['status' => 1, 'msg'=>'已读成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
-        }
+           return ['status' => 0, 'msg'=>'已读失败'];
+       }
+        return view('home');
+    }
+    
+    /**
+     * 标记所有已读
+     * @param integer $id
+     */
+    public function unreadAll()
+    {
+        $user = JWTAuth::user();
+        $ret = $user->unreadNotifications()->markAsRead();
+        if($ret){
+           return ['status' => 1, 'msg'=>'全部标记为已读成功'];
+        }else{
+           return ['status' => 0, 'msg'=>'全部标记为已读失败'];
+       }
     }
 }

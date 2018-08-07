@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Hash;
 use JWTAuth;
+use Bouncer;
 
 class AuthController extends Controller
 {
@@ -49,11 +50,16 @@ class AuthController extends Controller
      */
     public function getUserInfo()
     {
-        $user = auth('api')->user()->toArray();
-        $user['roles'] = auth('api')->user()->roles()->get()->pluck('name');
-        $ability = auth('api')->user()->getAbilities()->pluck('name')->toArray();
-        $lists = \App\Menu::whereIn('route_name', $ability)
-                ->orWhere('route_name', '=', '*')
+        $userModel = auth('api')->user();
+        $user = $userModel->toArray();
+        $user['roles'] = $userModel->roles()->get()->pluck('name');
+        $query = \App\Menu::query();
+        $ability = [];
+        if(!$userModel->isA('superadmin')){
+            $ability = $userModel->getAbilities()->pluck('name')->toArray();
+            $query->whereIn('route_name', $ability)->orWhere('route_name', '=', '*');
+        }
+        $lists = $query
                 ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden', 'buttons','always_show'])
                 ->get()
                 ->toArray();
@@ -86,8 +92,9 @@ class AuthController extends Controller
                 }
             }
         }
+        $notification = $userModel->unreadNotifications()->count();
         
-        return response()->json(compact('routes','user', 'ability'));
+        return response()->json(compact('routes','user', 'ability', 'notification'));
     }
 
     /**

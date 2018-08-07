@@ -19,16 +19,16 @@ use Illuminate\Http\Request;
 Route::group([
 
     'middleware' => 'api',
-    'prefix' => 'auth'
+    'prefix' => ''
 
 ], function () {
 
-    Route::post('login', 'AuthController@login')->name('api.auth.login');
-    Route::post('logout', 'AuthController@logout')->name('api.auth.logout');
-    Route::post('refresh', 'AuthController@refresh')->name('api.auth.refresh');
-    Route::get('userinfo', 'AuthController@getUserInfo')->name('api.auth.getUserInfo');
-    Route::put('userinfo', 'AuthController@saveUserInfo')->name('api.auth.saveUserInfo');
-    Route::put('password', 'AuthController@modifyPassword')->name('api.auth.modifyPassword');
+    Route::post('auth/login', 'AuthController@login')->name('api.auth.login');
+    Route::post('auth/logout', 'AuthController@logout')->name('api.auth.logout');
+    Route::post('auth/refresh', 'AuthController@refresh')->name('api.auth.refresh');
+    Route::get('auth/userinfo', 'AuthController@getUserInfo')->name('api.auth.getUserInfo');
+    Route::put('auth/userinfo', 'AuthController@saveUserInfo')->name('api.auth.saveUserInfo');
+    Route::put('auth/password', 'AuthController@modifyPassword')->name('api.auth.modifyPassword');
 
 });
 
@@ -38,21 +38,24 @@ Route::group([
     'middleware'=>[
        'auth:api',
         'permission'
-        , 'scope'
+        //, 'scope'
     ]
 ], function () {
     Route::resource('users', 'UserController');
-    Route::get('user/roles/{user}', 'UserController@getRoles');
-    Route::put('user/roles', 'UserController@updateRoles');
+    Route::get('user/roles/{user}', 'UserController@getRoles')->name('api.user.getRoles');
+    Route::put('user/roles', 'UserController@updateRoles')->name('api.user.updateRoles');
     Route::resource('roles', 'RoleController');
-    Route::get('roles/{role}/ability', 'RoleController@getRoleAbilities');
-    Route::put('roles/{role}/ability', 'RoleController@saveRoleAbility');
+    Route::get('roles/{role}/ability', 'RoleController@getRoleAbilities')->name('api.roles.ability');
+    Route::put('roles/{role}/ability', 'RoleController@saveRoleAbility')->name('api.roles.ability');
     Route::resource('permission', 'PermissionController');
-    Route::get('permission/{name}/search', 'PermissionController@search');
+    Route::get('permission/{name}/search', 'PermissionController@search')->name('api.permission.search');
     Route::resource('menu', 'MenuController');
-    Route::post('menu/{menu}/buttons', 'MenuController@createButton');
+    Route::post('menu/{menu}/buttons', 'MenuController@createButton')->name('api.menu.createButton');
     Route::resource('company', 'CompanyController');
-    Route::post('upload', 'UploadController@store');
+    Route::post('upload', 'UploadController@store')->name('api.upload.store');
+    Route::resource('notification', 'NotificationController');
+    Route::post('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread');
+    Route::post('notification/unreadall', 'NotificationController@unreadAll')->name('api.notification.unreadAll');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

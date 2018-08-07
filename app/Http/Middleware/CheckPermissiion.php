@@ -20,10 +20,14 @@ class CheckPermissiion
     {
 
         $name = $this->getPermissionName(Route::getCurrentRoute());
-        $ret = Bouncer::can($name);
-        // if(!Bouncer::can($name)) {
-        //     return response()->json(['error' => 'Unauthenticated.'], 401);
-        // }
+        
+        if(Bouncer::is(auth('api')->user())->a('superadmin')){
+            return $next($request);
+        }
+
+         if(!Bouncer::can($name)) {
+             return response()->json(['error' => 'Unauthenticated.'], 403);
+         }
         
         return $next($request);
     }

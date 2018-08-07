@@ -9,6 +9,17 @@ use App\User;
 
 class UserController extends Controller
 {
+    protected $message = [
+        'name.required' => '用户名称必须',
+        'name.unique' => '用户名称已经存在',
+        'name.max' => '用户名称不能超过255个字符',
+        'email.required' => '用户邮箱必须',
+        'email.unique' => '用户邮箱已经存在',
+        'email.max' => '用户邮箱不能超过255个字符',
+        'password.required' => '用户密码必须',
+        'password.confirmed' => '两次输入密码不一致',
+        'password.min' => '用户密码至少6个字符',
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -52,13 +63,13 @@ class UserController extends Controller
             'name' => 'required|unique:users|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:6',
-        ]);
+        ], $this->message);
        $ret = User::create($data);
        
        if($ret){
-           return ['status' => 1, 'msg'=>'保存成功'];
+           return ['status' => 1, 'msg'=>'添加成功'];
        }else{
-           return ['status' => 0, 'msg'=>'保存失败'];
+           return ['status' => 0, 'msg'=>'添加失败'];
        }
     }
 
@@ -98,7 +109,7 @@ class UserController extends Controller
        $this->validate($request, [
             'name' => 'required|unique:users,name,'.$id.'|max:255',
             'email' => 'required|email|unique:users,email,'.$id
-        ]);
+        ], $this->message);
        $ret = $user->update($data);
        
        if($ret){
@@ -137,6 +148,6 @@ class UserController extends Controller
         $uid = $request->input('id');
         $user = \App\User::findOrFail($uid);
         Bouncer::sync($user)->roles($request->input('roles',[]));
-        return ['status' => 1, 'msg'=>'success'];
+        return ['status' => 1, 'msg'=>'更新用户角色成功'];
     }
 }

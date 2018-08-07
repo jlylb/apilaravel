@@ -8,6 +8,15 @@ use App\Menu;
 
 class MenuController extends Controller
 {
+    protected $message = [
+        'name.required' => '菜单名称必须',
+        'name.unique' => '菜单名称已经存在',
+        'name.max' => '菜单名称不能超过255个字符',
+        'route_name.required' => '路由名称必须',
+        'route_name.max' => '路由名称不能超过255个字符',
+        'route_path.required' => '路由路径必须',
+        'component.required' => '组件必须',
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -53,6 +62,12 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request,[
+             'name' => 'required|unique:menus|max:255',
+             'route_name' => 'required|max:255',
+             'route_path' => 'required',
+             'component' => 'required',
+        ],$this->message);
         $data = array_except(json_decode($request->getContent(), true), 'action');
         $parentId=$data['pid'];
         $data['pid']=end($parentId);
@@ -61,10 +76,14 @@ class MenuController extends Controller
             $path=array_merge($parentId,[$menu->id]);
             $menu->path=implode('-',$path);
             $menu->save();
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'添加成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'添加失败'];
         }
+    }
+    
+    public function messages($param) {
+        
     }
 
     /**
@@ -113,20 +132,21 @@ class MenuController extends Controller
         $data['path']=implode('-',array_merge($spid,[$id]));
         $spath=$menu->path;
 
-        // $this->validate($request,[
-        //     'name' => 'required|unique:categories,name,'.$id.',|max:255',
-        //     'name_en' => 'required|unique:categories,name,'.$id.',|max:255',
-        //     'parent_id' => 'required',
-        // ]);
+         $this->validate($request,[
+             'name' => 'required|unique:menus,name,'.$id.',|max:255',
+             'route_name' => 'required|max:255',
+             'route_path' => 'required',
+             'component' => 'required',
+         ],$this->message);
 
 
         if($menu->update($data)){
             if($sourcePid!=$parentId){
                 $menu->updateChildren($spath,$data['path']);
             }
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'保存成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'保存失败'];
         }
     }
 
@@ -140,9 +160,9 @@ class MenuController extends Controller
     {
         $menu = Menu::findOrFail($id);
         if($menu->delete()){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'删除成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'删除失败'];
         }
     }
     
@@ -152,9 +172,9 @@ class MenuController extends Controller
         $buttons = json_decode($request->getContent(), true);
         $menu->buttons = $buttons['button'];
         if($menu->save()){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'更新成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'更新失败'];
         }
     }
 }

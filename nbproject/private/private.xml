@@ -4,18 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UserController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Menu.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/Auth/PasswordController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/api.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/PermissionController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/auth.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/AuthController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/User.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/Controller.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Requests/Request.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/CompanyController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/RoleController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/Auth/AuthController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Ability.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Middleware/CheckPermissiion.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/PermissionController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MenuController.php</file>
         </group>
     </open-files>

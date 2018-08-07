@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
+use App\Jobs\SendReminderEmail;
+use App\Notifications\InvoicePaid;
 use Route;
 use Bouncer;
+use Mail;
 
 class HomeController extends Controller
 {
@@ -17,9 +20,9 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware([
-            'auth',
-            'permission'
-            , 'scope'
+//            'auth',
+//            'permission'
+//            , 'scope'
             ]);
     }
 
@@ -46,23 +49,10 @@ class HomeController extends Controller
     public function genPermission()
     {
         foreach(Route::getRoutes() as $route){
-            // $curAction = $route->getActionName();
-            // $curPrefix = trim($route->getPrefix(),'/');
-            // $prefix = [];
-            // if($curPrefix) {
-            //     $prefix = explode('/', $curPrefix);
-            // }
-            // $curAction = explode('\\', $curAction);
-
-            // $controller = strtolower(str_replace('Controller', '', end($curAction)));
-            // $actions = array_merge($prefix, explode('@', $controller));
-            // $name = implode('_', $actions);
-            // $title = implode(' ', $actions);
-
             $routeName = $route->getName();
-            // if(strpos($routeName,'company')===false){
-            //     continue;
-            // }
+             if(strpos($routeName,'notification')===false){
+                 continue;
+             }
             $curPrefix = trim($route->getPrefix(),'/')?:'';
 
             if(!$routeName) {
@@ -79,5 +69,38 @@ class HomeController extends Controller
                 'route_path' => '/'.trim(str_replace($curPrefix, '', $routePath), '/')
             ]);
         }
+    }
+    public function send()  
+    {  
+        $name = 'vilin';  
+        $flag = Mail::send('emails.test',['name'=>$name],function($message){  
+            $to = '395458341@qq.com';  
+            $message ->to($to)->subject('邮件主题');  
+        });  
+        if($flag){  
+            echo '发送邮件成功，请查收！';  
+        }else{  
+            echo '发送邮件失败，请重试！';  
+        }  
+    } 
+    
+    public function sendReminderEmail(Request $request, $id)
+    {
+        $user = \App\User::findOrFail($id);
+
+        $this->dispatch(new SendReminderEmail($user));
+    }
+    
+    public function sendNotifaction($id) {
+        $user = \App\User::findOrFail($id);
+        $user->notify(new InvoicePaid());
+    }
+    
+    public function sendNotifaction2($id) {
+        $user = \App\User::findOrFail($id);
+        $user->notify(new \App\Notifications\AlarmNotice([
+            'content'=>'机房主机出现重要故障，请速查看',
+            'status'=>'enemegy'
+        ]));
     }
 }

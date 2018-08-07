@@ -8,6 +8,13 @@ use Bouncer;
 
 class PermissionController extends Controller
 {
+    protected $message = [
+        'name.required' => '权限名称必须',
+        'name.unique' => '权限名称已经存在',
+        'name.max' => '权限名称不能超过155个字符',
+        'title.required' => '权限描述必须',
+        'title.max' => '权限描述不能超过255个字符',
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -51,12 +58,12 @@ class PermissionController extends Controller
         $this->validate($request, [
             'name' => 'required|unique:abilities|max:155',
             'title' => 'required|max:255',
-        ]);
+        ], $this->message);
         $ability = Bouncer::ability()->create($data);
         if($ability){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'添加成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'添加失败'];
         }
     }
 
@@ -95,12 +102,12 @@ class PermissionController extends Controller
         $this->validate($request, [
             'name' => 'required|unique:abilities,name,'.$id.'|max:155',
             'title' => 'required|max:255',
-        ]);
+        ], $this->message);
         $ability = Bouncer::ability()->findOrFail($id);
         if($ability->update($data)){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'保存成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'保存失败'];
         }
     }
 
@@ -114,9 +121,9 @@ class PermissionController extends Controller
     {
         $ability = Bouncer::ability()->findOrFail($id);
         if($ability->delete()){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'删除成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'删除失败'];
         }
     }
 

@@ -9,6 +9,14 @@ use Bouncer;
 
 class RoleController extends Controller
 {
+    protected $message = [
+        'name.required' => '角色名称必须',
+        'name.alpha_dash' => '角色名称只能含字母和数字，以及破折号和下划线',
+        'name.unique' => '角色名称已经存在',
+        'name.max' => '角色名称不能超过155个字符',
+        'title.required' => '角色描述必须',
+        'title.max' => '角色描述不能超过255个字符',
+    ];
     /**
      * Display a listing of the resource.
      *
@@ -50,14 +58,14 @@ class RoleController extends Controller
     {
         $data = $request->input();
         $this->validate($request, [
-            'name' => 'required|unique:roles|max:155',
+            'name' => 'required|alpha_dash|unique:roles|max:155',
             'title' => 'required|max:255',
-        ]);
+        ], $this->message);
         $ability = Bouncer::role()->create($data);
         if($ability){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'添加成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'添加失败'];
         }
     }
 
@@ -94,14 +102,14 @@ class RoleController extends Controller
     {
         $data = $request->input();
         $this->validate($request, [
-            'name' => 'required|unique:roles,name,'.$id.'|max:155',
+            'name' => 'required|alpha_dash|unique:roles,name,'.$id.'|max:155',
             'title' => 'required|max:255',
-        ]);
+        ], $this->message);
         $ability = Bouncer::role()->findOrFail($id);
         if($ability->update($data)){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'保存成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'保存失败'];
         }
     }
 
@@ -115,9 +123,9 @@ class RoleController extends Controller
     {
         $ability = Bouncer::role()->findOrFail($id);
         if($ability->delete()){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'删除成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'删除失败'];
         }
     }
 
@@ -180,6 +188,6 @@ class RoleController extends Controller
 //        Bouncer::allow($role)->to($to);
 //        Bouncer::disallow($role)->to($to);
         //dd(Bouncer::role(['name'=>$role])->getAbilities());
-        return ['status' => 1, 'msg'=>'successful'];
+        return ['status' => 1, 'msg'=>'保存角色权限成功'];
     }
 }

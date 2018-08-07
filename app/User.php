@@ -5,11 +5,12 @@ namespace App;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
 
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasRolesAndAbilities;
+    use HasRolesAndAbilities, Notifiable;
     /**
      * The attributes that are mass assignable.
      *
