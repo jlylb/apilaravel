@@ -125,4 +125,13 @@ class CompanyController extends Controller
             return ['status' => 0, 'msg'=>'fail'];
         }
     }
+    
+    public function search(Request $request, $name)
+    {
+        $query = Company::query();
+        $company = $query->where('name', 'like', '%'.$name.'%')
+        ->select('id as value', 'name as label')
+        ->get();
+        return ['status' => 1, 'data'=>$company];
+    }
 }

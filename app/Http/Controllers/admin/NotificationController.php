@@ -3,21 +3,19 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Bouncer;
 use Illuminate\Notifications\DatabaseNotification;
 use Carbon\Carbon;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\traits\UserPrivilege;
 
 
 class NotificationController extends Controller
 {
+    use UserPrivilege;
     
     protected function getQuery() {
-        $user = JWTAuth::user();
-        if(Bouncer::is($user)->a('superadmin')){
+        $user = $this->user();
+        if($this->isSuper($user)){
             $query = DatabaseNotification::query();
         }else{
            $query = $user->notifications();
@@ -31,7 +29,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $this->getQuery();
+        $query = $this->getQuery()->leftJoin('users','users.id', '=', 'notifications.notifiable_id');
         $perPage = $request->input('pageSize',15);
         $name = $request->input('name', '');
         if(!empty($name)) {
@@ -41,7 +39,7 @@ class NotificationController extends Controller
         if(!empty($created)) {
             $query->whereBetween('created_at', $created);
         }
-        $notification = $query->paginate($perPage);
+        $notification = $query->select(['notifications.*', 'users.name'])->paginate($perPage);
         return ['status' => 1, 'data'=>$notification];
     }
 
@@ -124,7 +122,7 @@ class NotificationController extends Controller
     public function unread($id)
     {
         
-        $user = JWTAuth::user();
+        $user = $this->user();
         $ret = $user->unreadNotifications()->where('id', '=', $id)->update(['read_at' => Carbon::now()]);
         if($ret){
            return ['status' => 1, 'msg'=>'已读成功'];
@@ -140,7 +138,7 @@ class NotificationController extends Controller
      */
     public function unreadAll()
     {
-        $user = JWTAuth::user();
+        $user = $this->user();
         $ret = $user->unreadNotifications()->markAsRead();
         if($ret){
            return ['status' => 1, 'msg'=>'全部标记为已读成功'];

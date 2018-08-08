@@ -8,5 +8,14 @@ namespace App\Http\Controllers;
  * @author Administrator
  */
 class ApiController extends Controller{
+    
+    protected function user() {
+        return auth()->guard('api')->user();
+    }
+    
+    
+    protected function isSuper() {
+        return $this->user()->isA('superadmin');
+    }
    
 }

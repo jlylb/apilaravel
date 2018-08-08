@@ -20,9 +20,9 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware([
-//            'auth',
-//            'permission'
-//            , 'scope'
+            'auth'
+           //, 'permission'
+            , 'scope'
             ]);
     }
 
@@ -33,11 +33,15 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-      $res = $request->user()->getAbilities()->pluck('name')->toArray();
-        //var_dump($res);
-              $menu = \App\Menu::whereIn('route_name', $res)
-                ->orWhere('route_name', '=', '*')->get()->toArray();
+//      $res = $request->user()->getAbilities()->pluck('name')->toArray();
+//        //var_dump($res);
+//              $menu = \App\Menu::whereIn('route_name', $res)
+//                ->orWhere('route_name', '=', '*')->get()->toArray();
                // Bouncer::allow($request->user())->toOwn(\App\Menu::class)->to(['view', 'update']);
+//        $ret = Bouncer::can('api.user.updateRoles');
+//        var_dump($ret);
+        $ret = Bouncer::role()->where('name','=','company_admin')->first();
+        var_dump($ret->users()->where('company_id','=','9')->get()->pluck('id')->toArray());
         return view('home');
     }
 

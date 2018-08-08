@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'company_id'
     ];
 
     /**
@@ -51,5 +51,9 @@ class User extends Authenticatable implements JWTSubject
     
     public function setPasswordAttribute($value) {
         $this->attributes['password'] = bcrypt($value);
+    }
+    
+    public function company() {
+        return $this->belongsTo('\App\Company');
     }
 }

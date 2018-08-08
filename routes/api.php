@@ -36,9 +36,9 @@ Route::group([
     'namespace'=>'admin',
     'prefix'=>'',
     'middleware'=>[
-       'auth:api',
-        'permission'
-        //, 'scope'
+       'auth:api'
+       , 'permission:api'
+       , 'scope'
     ]
 ], function () {
     Route::resource('users', 'UserController');
@@ -52,6 +52,7 @@ Route::group([
     Route::resource('menu', 'MenuController');
     Route::post('menu/{menu}/buttons', 'MenuController@createButton')->name('api.menu.createButton');
     Route::resource('company', 'CompanyController');
+    Route::get('company/{company}/search', 'CompanyController@search')->name('api.company.search');
     Route::post('upload', 'UploadController@store')->name('api.upload.store');
     Route::resource('notification', 'NotificationController');
     Route::post('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread');

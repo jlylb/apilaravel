@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
+use App\Http\traits\UserPrivilege;
 use Hash;
 use JWTAuth;
 use Bouncer;
 
 class AuthController extends Controller
 {
-        /**
+    use UserPrivilege;
+    /**
      * Create a new AuthController instance.
      *
      * @return void
@@ -36,7 +38,7 @@ class AuthController extends Controller
              'password' => $post['password'],
          ];
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (! $token = $this->auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -50,7 +52,7 @@ class AuthController extends Controller
      */
     public function getUserInfo()
     {
-        $userModel = auth('api')->user();
+        $userModel = $this->user();
         $user = $userModel->toArray();
         $user['roles'] = $userModel->roles()->get()->pluck('name');
         $query = \App\Menu::query();
@@ -93,8 +95,8 @@ class AuthController extends Controller
             }
         }
         $notification = $userModel->unreadNotifications()->count();
-        
-        return response()->json(compact('routes','user', 'ability', 'notification'));
+        $user['notification'] = $notification;
+        return response()->json(compact('routes','user', 'ability'));
     }
 
     /**
@@ -104,7 +106,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth('api')->logout();
+        $this->auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -116,7 +118,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->respondWithToken(auth('api')->refresh());
+        return $this->respondWithToken($this->auth()->refresh());
     }
 
     /**
@@ -131,13 +133,13 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
+            'expires_in' => $this->auth()->factory()->getTTL() * 60
         ]);
     }
 
 
     public function saveUserInfo(Request $request) {
-        $user = auth('api')->user();
+        $user = $this->user();
         $avatar = $request->input('logo', '');
         $user->avatar = $avatar;
         if($user->save()) {
@@ -149,7 +151,7 @@ class AuthController extends Controller
     }
 
     public function modifyPassword(Request $request) {
-        $user = auth('api')->user();
+        $user = $this->user();
         $this->validate($request,[
             'password' => 'required|min:6',
             'new_password' => 'required|min:6|confirmed',

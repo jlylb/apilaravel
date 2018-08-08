@@ -16,16 +16,19 @@ class CheckPermissiion
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard=null)
     {
 
         $name = $this->getPermissionName(Route::getCurrentRoute());
-        
-        if(Bouncer::is(auth('api')->user())->a('superadmin')){
+        if(!$guard) {
+            $guard = 'web';
+        }
+        $user = auth($guard)->user();
+        if(Bouncer::is($user)->a('superadmin')){
             return $next($request);
         }
-
-         if(!Bouncer::can($name)) {
+        //var_dump(Bouncer::can($name),$name);
+         if(!$user->can($name)) {
              return response()->json(['error' => 'Unauthenticated.'], 403);
          }
         

@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Silber\Bouncer\Database\Models;
 use Bouncer;
+use App\Http\traits\UserPrivilege;
 
 class RoleController extends Controller
 {
+    use UserPrivilege;
+    
     protected $message = [
         'name.required' => '角色名称必须',
         'name.alpha_dash' => '角色名称只能含字母和数字，以及破折号和下划线',
@@ -33,6 +36,11 @@ class RoleController extends Controller
         $created = $request->input('created_at', []);
         if(!empty($created)) {
             $query->whereBetween('created_at', $created);
+        }
+        $user = $this->user();
+        if(!$this->isSuper($user)){
+            //$ownRoles = $user->roles()->get()->pluck('id')->toArray();
+            $query->where('scope', $user->company_id);
         }
         $roles = $query->paginate($perPage);
         return ['status' => 1, 'data'=>$roles];
@@ -132,8 +140,13 @@ class RoleController extends Controller
     public function getRoleAbilities($role)
     {
         $allAbilities = Bouncer::ability()->select(['name','title'])->get()->toArray();
-
-        $all = $this->formatAbility($allAbilities);
+        $user = $this->user();
+        if($this->isSuper($user)){
+            $all = $this->formatAbility($allAbilities);
+        }else{
+            $all = $this->formatAbility($user->getAbilities()->toArray());
+        }
+        
         
         $roleAbility = $this->formatAbility($this->roleAbility($role));
 
@@ -164,20 +177,8 @@ class RoleController extends Controller
     }
     
     protected function roleAbility($role) {
-        
-        $permissions = Models::table('permissions');
-        $abilities   = Models::table('abilities');
-        $roles       = Models::table('roles');
-        $prefix      = Models::prefix();
-
-        $list = Bouncer::role()
-              ->select([$abilities.'.name', $abilities.'.title'])
-              ->join($permissions, $roles.'.id', '=', $permissions.'.entity_id')
-              ->join($abilities, "{$prefix}{$permissions}.ability_id", "=" , "{$prefix}{$abilities}.id")
-              ->where($permissions.".forbidden", 0)
-              ->where($roles.".name", "=", $role)
-              ->where($permissions.".entity_type", Models::role()->getMorphClass())
-              ->get()->toArray();
+        $model = Bouncer::role()->where('name','=',$role)->first();
+        $list = $model->getAbilities()->toArray();
         return $list;
     }
     
@@ -185,9 +186,6 @@ class RoleController extends Controller
         $abilities = json_decode($request->getContent(),true);
         $to = array_get($abilities, 'ability', []);
         Bouncer::sync($role)->abilities($to);
-//        Bouncer::allow($role)->to($to);
-//        Bouncer::disallow($role)->to($to);
-        //dd(Bouncer::role(['name'=>$role])->getAbilities());
         return ['status' => 1, 'msg'=>'保存角色权限成功'];
     }
 }

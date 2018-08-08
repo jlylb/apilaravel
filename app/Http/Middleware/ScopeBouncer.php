@@ -37,8 +37,15 @@ class ScopeBouncer
         // Here you may use whatever mechanism you use in your app
         // to determine the current tenant. To demonstrate, the
         // $tenantId is set here from the user's account_id.
-        $tenantId = $request->user()->id;
-
+        if(!($user = auth('api')->user())){
+            $user = $request->user();
+        }
+        
+        $tenantId = null;
+        if($user && !$user->isA('superadmin')){
+            $tenantId = $user->company_id;
+        }
+        
         $this->bouncer->scope()->to($tenantId);
 
         return $next($request);

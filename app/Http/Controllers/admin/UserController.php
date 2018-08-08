@@ -4,11 +4,15 @@ namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\traits\UserPrivilege;
 use Bouncer;
 use App\User;
 
+
 class UserController extends Controller
 {
+    use UserPrivilege;
+    
     protected $message = [
         'name.required' => '用户名称必须',
         'name.unique' => '用户名称已经存在',
@@ -37,7 +41,16 @@ class UserController extends Controller
         if(!empty($created)) {
             $query->whereBetween('created_at', $created);
         }
-        $users = $query->paginate($perPage);
+        $user = $this->user();
+        if(!$this->isSuper($user)){
+            $leader = Bouncer::role()->where('name','=','company_admin')->first();
+            $ids = $leader->users()->where('company_id','=',$user->company_id)->get()->pluck('id')->toArray();
+            $query->where('company_id', '=', $user->company_id)->whereNotIn('id', $ids);
+        }
+        $users = $query->with(['company' => function($q){
+            $q -> select(['name','id']);
+        }]) -> paginate($perPage);
+        
         return ['status' => 1, 'data'=>$users];
     }
 
@@ -137,8 +150,14 @@ class UserController extends Controller
 
     public function getRoles($id)
     {
-        $allRoles = Bouncer::role()->select(['name as value','title as label'])->get();
         $user = \App\User::findOrFail($id);
+        $currentUser = $this->user();
+        if($this->isSuper($currentUser)){
+            $allRoles = Bouncer::role()->select(['name as value','title as label'])->get();
+        }else{
+            $allRoles = Bouncer::role()->where('scope', '=', $user->company_id)->select(['name as value','title as label'])->get();
+        }
+       
         $myRoles = $user->roles()->get()->pluck('name');
         return ['status' => 1, 'data'=>compact('allRoles','myRoles')];
     }
