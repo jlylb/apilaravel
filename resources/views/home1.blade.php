@@ -21,8 +21,8 @@
         !!};
     </script>
 
-</head>
+<link rel="shortcut icon" href="/favicon.ico"></head>
 <body>
     <div id="app"></div>
-</body>
+<script type="text/javascript" src="/static/js/manifest.js"></script><script type="text/javascript" src="/static/js/vendor.js"></script><script type="text/javascript" src="/static/js/app.js"></script></body>
 </html>

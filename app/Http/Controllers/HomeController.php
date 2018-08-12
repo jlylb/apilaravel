@@ -9,6 +9,7 @@ use App\Notifications\InvoicePaid;
 use Route;
 use Bouncer;
 use Mail;
+use JWTAuth;
 
 class HomeController extends Controller
 {
@@ -40,9 +41,18 @@ class HomeController extends Controller
                // Bouncer::allow($request->user())->toOwn(\App\Menu::class)->to(['view', 'update']);
 //        $ret = Bouncer::can('api.user.updateRoles');
 //        var_dump($ret);
-        $ret = Bouncer::role()->where('name','=','company_admin')->first();
-        var_dump($ret->users()->where('company_id','=','9')->get()->pluck('id')->toArray());
-        return view('home');
+        $user = $request->user();
+        $data = [
+            'csrf_token' => csrf_token(),
+            'base_url'   => url('/'),
+            'api'        => url('api/v2'),
+            'logged'     => (bool) $user,
+            'user'       => $user,
+            'token' => JWTAuth::fromUser($user),
+        ];
+
+        return view('home1', $data);
+        //return view('home1');
     }
 
     public function welcome()

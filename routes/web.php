@@ -11,11 +11,11 @@
 |
 */
 
-Route::get('/', 'HomeController@welcome')->name('welcome');
+// Route::get('/', 'HomeController@welcome')->name('welcome');
 
 Route::auth();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
 Route::get('/ro', 'HomeController@genPermission')->name('ro');
 Route::get('/testmail', 'HomeController@send')->name('mailsend');
 Route::get('/sendjob/{user}', 'HomeController@sendReminderEmail')->name('mailsendjob');
