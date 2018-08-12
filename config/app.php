@@ -222,7 +222,7 @@ return [
         'JWTFactory'=> Tymon\JWTAuth\Facades\JWTFactory::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
 
-        'ActionLog' => 'luoyangpeng\ActionLog\Facades\ActionLogFacade',
+        'ActionLog' => luoyangpeng\ActionLog\Facades\ActionLogFacade::class,
 
     ],
 
