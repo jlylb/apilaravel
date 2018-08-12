@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "979df04a0ed00beb38134ebe1d47373b",
+    "content-hash": "cf5d5ef374b80b49151bf2ea202cdaf9",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -1004,6 +1004,46 @@
                 "rest"
             ],
             "time": "2017-06-12T11:04:56+00:00"
+        },
+        {
+            "name": "luoyangpeng/action-log",
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/luoyangpeng/action-log.git",
+                "reference": "e445f5d4f2007a1584b948dbae1cb53789b97e3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/luoyangpeng/action-log/zipball/e445f5d4f2007a1584b948dbae1cb53789b97e3f",
+                "reference": "e445f5d4f2007a1584b948dbae1cb53789b97e3f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "luoyangpeng\\ActionLog\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "luoyangpeng",
+                    "email": "luoyangpeng1122@163.com"
+                }
+            ],
+            "description": "A laravel package of ActionLog",
+            "keywords": [
+                "actionlog",
+                "laravel"
+            ],
+            "time": "2016-07-08T06:35:53+00:00"
         },
         {
             "name": "maximebf/debugbar",

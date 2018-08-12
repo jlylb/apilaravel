@@ -166,6 +166,8 @@ return [
         
         Illuminate\Notifications\NotificationServiceProvider::class,
 
+        luoyangpeng\ActionLog\ActionLogServiceProvider::class,
+
     ],
 
     /*
@@ -219,6 +221,8 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory'=> Tymon\JWTAuth\Facades\JWTFactory::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
+
+        'ActionLog' => 'luoyangpeng\ActionLog\Facades\ActionLogFacade',
 
     ],
 
