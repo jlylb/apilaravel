@@ -166,7 +166,8 @@ return [
         
         Illuminate\Notifications\NotificationServiceProvider::class,
 
-        luoyangpeng\ActionLog\ActionLogServiceProvider::class,
+       // luoyangpeng\ActionLog\ActionLogServiceProvider::class,
+       App\Providers\CustomLogServiceProvider::class,
 
     ],
 
