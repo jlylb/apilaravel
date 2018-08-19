@@ -57,6 +57,9 @@ Route::group([
     Route::resource('notification', 'NotificationController');
     Route::post('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread');
     Route::post('notification/unreadall', 'NotificationController@unreadAll')->name('api.notification.unreadAll');
+    Route::resource('post','PostController');
+    Route::resource('category','CategoryController');
+
 });
 
 //$api = app('Dingo\Api\Routing\Router');

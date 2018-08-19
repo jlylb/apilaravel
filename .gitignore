@@ -6,3 +6,6 @@ Homestead.json
 .env
 /public/upload
 /public/static
+*.map
+*.json
+*.hot-update.js
