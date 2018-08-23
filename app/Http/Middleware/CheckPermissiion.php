@@ -29,7 +29,7 @@ class CheckPermissiion
         }
         //var_dump(Bouncer::can($name),$name);
          if(!$user->can($name)) {
-             return response()->json(['error' => 'Unauthenticated.'], 403);
+             return response()->json([['msg' => 'Unauthenticated.']], 403);
          }
         
         return $next($request);

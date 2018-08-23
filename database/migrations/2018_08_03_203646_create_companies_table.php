@@ -22,12 +22,6 @@ class CreateCompaniesTable extends Migration
             $table->string('logo', 150);
             $table->timestamps();
         });
-        Schema::create('user_company', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->index();
-            $table->integer('company_id')->index();
-            $table->timestamps();
-        });
     }
 
     /**
@@ -38,6 +32,5 @@ class CreateCompaniesTable extends Migration
     public function down()
     {
         Schema::drop('companies');
-        Schema::drop('user_company');
     }
 }

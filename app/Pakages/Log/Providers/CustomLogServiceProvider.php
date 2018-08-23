@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace App\Pakages\Log\Providers;
 
 use luoyangpeng\ActionLog\ActionLogServiceProvider;
 use ActionLog;
@@ -55,6 +55,8 @@ class CustomLogServiceProvider extends ActionLogServiceProvider
      */
     public function register()
     {
-        parent::register();
+        $this->app->singleton("ActionLog",function($app){
+            return new \App\Pakages\Log\Repository\ActionLogRepository();
+        });
     }
 }

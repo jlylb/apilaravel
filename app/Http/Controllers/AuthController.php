@@ -33,16 +33,21 @@ class AuthController extends Controller
         // $credentials = request(['name', 'password']);
          $post = $request->input();
          
-         $credentials = [
-             'name' => $post['username'],
-             'password' => $post['password'],
-         ];
+         $credentials = $this->getCredentials($post);
 
         if (! $token = $this->auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['status'=>0,'msg'=>'账号或密码错误','code'=>'4001']);
         }
 
         return $this->respondWithToken($token);
+    }
+    
+    protected function getCredentials($post) {
+        $credentials = [
+             'username' => $post['username'],
+             'password' => $post['password'],
+         ];
+        return $credentials;
     }
 
     /**
@@ -53,6 +58,7 @@ class AuthController extends Controller
     public function getUserInfo()
     {
         $userModel = $this->user();
+        $userModel->load('company');
         $user = $userModel->toArray();
         $user['roles'] = $userModel->roles()->get()->pluck('name');
         $query = \App\Menu::query();
@@ -108,7 +114,7 @@ class AuthController extends Controller
     {
         $this->auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => '退出成功']);
     }
 
     /**
@@ -143,9 +149,9 @@ class AuthController extends Controller
         $avatar = $request->input('logo', '');
         $user->avatar = $avatar;
         if($user->save()) {
-            return ['status'=>1, 'msg'=>'successful'];
+            return ['status'=>1, 'msg'=>'个人信息修改成功'];
         }else{
-            return ['status'=>0, 'msg'=>'fail'];
+            return ['status'=>0, 'msg'=>'个人信息修改失败'];
         }
 
     }
@@ -160,17 +166,21 @@ class AuthController extends Controller
         $password = $request->input('password');
         $newPassword = $request->input('new_password');
 
-        if(!Hash::check($password, $user->password)){
+        if(!$this->checkPwd($password, $user->userpwd)){
             return ['status'=>0, 'msg'=>'原密码不正确'];
         }
 
-        $user->password = $newPassword ;
+        $user->userpwd = $newPassword ;
         if($user->save()) {
             JWTAuth::parseToken()->invalidate();
-            return ['status'=>1, 'msg'=>'successful'];
+            return ['status'=>1, 'msg'=>'密码修改成功'];
         }else{
-            return ['status'=>0, 'msg'=>'fail'];
+            return ['status'=>0, 'msg'=>'密码修改失败'];
         }
 
+    }
+    
+    protected function checkPwd($password,$srcPassword) {
+        return md5(trim($password))===$srcPassword;
     }
 }

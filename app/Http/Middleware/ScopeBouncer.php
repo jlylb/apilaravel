@@ -43,7 +43,7 @@ class ScopeBouncer
         
         $tenantId = null;
         if($user && !$user->isA('superadmin')){
-            $tenantId = $user->company_id;
+            $tenantId = $user->Co_ID;
         }
         
         $this->bouncer->scope()->to($tenantId);

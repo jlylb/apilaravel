@@ -57,6 +57,18 @@ Route::group([
     Route::resource('notification', 'NotificationController');
     Route::post('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread');
     Route::post('notification/unreadall', 'NotificationController@unreadAll')->name('api.notification.unreadAll');
+    
+    Route::resource('devicetype', 'DevicetypeController');
+    Route::resource('deviceinfo', 'DeviceinfoController');
+    
+    Route::get('deviceinfo/devicetype/all', 'DeviceinfoController@getDeviceType');
+    Route::get('deviceinfo/{company}/area', 'DeviceinfoController@getCompanyArea');
+    
+    Route::resource('area', 'AreaController');
+    
+    Route::resource('data', 'DataController@index');
+    
+    Route::get('monitor/index', 'MonitorController@index');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

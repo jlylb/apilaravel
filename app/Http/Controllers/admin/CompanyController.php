@@ -11,8 +11,8 @@ use App\Company;
 class CompanyController extends Controller
 {
     protected $message = [
-        'name.required' => '公司名称必须',
-        'name.max' => '公司名称不能超过150个字符',
+        'Co_Name.required' => '公司名称必须',
+        'Co_Name.max' => '公司名称不能超过150个字符',
     ];
     /**
      * Display a listing of the resource.
@@ -22,10 +22,10 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
-        $name = $request->input('name', '');
+        $name = $request->input('Co_Name', '');
         $query = Company::query();
         if(!empty($name)) {
-            $query->where('name', 'like', $name.'%');
+            $query->where('Co_Name', 'like', $name.'%');
         }
         $created = $request->input('created_at', []);
         if(!empty($created)) {
@@ -56,13 +56,13 @@ class CompanyController extends Controller
     {
         $data = $request->input();
         $this->validate($request, [
-            'name'=>'required|max:150'
+            'Co_Name'=>'required|max:150'
         ], $this->message);
         $ret = Company::create($data);
         if($ret){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'添加成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'添加失败'];
         }
     }
 
@@ -99,14 +99,14 @@ class CompanyController extends Controller
     {
         $data = $request->input();
         $this->validate($request, [
-            'name'=>'required|max:150'
+            'Co_Name'=>'required|max:150'
         ], $this->message);
         $company = Company::find($id);
         $ret = $company->update($data);
         if($ret){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'保存成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'保存失败'];
         }
     }
 
@@ -120,18 +120,18 @@ class CompanyController extends Controller
     {
         $company = Company::findOrFail($id);
         if($company->delete()){
-            return ['status' => 1, 'msg'=>'successful'];
+            return ['status' => 1, 'msg'=>'删除成功'];
         }else{
-            return ['status' => 0, 'msg'=>'fail'];
+            return ['status' => 0, 'msg'=>'删除失败'];
         }
     }
     
     public function search(Request $request, $name)
     {
         $query = Company::query();
-        $company = $query->where('name', 'like', '%'.$name.'%')
-        ->select('id as value', 'name as label')
-        ->get();
+        $company = $query->where('Co_Name', 'like', trim($name).'%')
+            ->select('Co_ID as value', 'Co_Name as label')
+            ->get();
         return ['status' => 1, 'data'=>$company];
     }
 }

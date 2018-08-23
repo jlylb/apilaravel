@@ -25,7 +25,10 @@ Route::get('/sendNotify2/{user}', 'HomeController@sendNotifaction2')->name('send
 Route::group(['namespace' => 'admin'], function () {
     Route::resource('notification', 'NotificationController');
     Route::get('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread1');
+    Route::resource('deviceinfo', 'DeviceinfoController');
+    Route::get('deviceinfo/devicetype/all', 'DeviceinfoController@getDeviceType');
 });
+
 
 
 //Route::group([

@@ -37,7 +37,7 @@ class NotificationController extends Controller
         }
         $created = $request->input('created_at', []);
         if(!empty($created)) {
-            $query->whereBetween('created_at', $created);
+            $query->whereBetween('notifications.created_at', $created);
         }
         $notification = $query->select(['notifications.*', 'users.name'])->paginate($perPage);
         return ['status' => 1, 'data'=>$notification];
