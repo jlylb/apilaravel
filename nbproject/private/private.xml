@@ -3,37 +3,27 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/seeds/Hisdata.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/web.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UserController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Menu.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/factories/ModelFactory.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DataController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/SyUser.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/upload.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/PriDeviceInfo.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UploadController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/User.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/roles.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/HomeController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Middleware/CheckPermissiion.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DevicetypeController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Company.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Providers/AuthServiceProvider.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/DeviceType.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DeviceinfoController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/AreaController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/CompanyController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/traits/Utils.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/NotificationController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DeviceinfoController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/DeviceType.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Soil.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Co2.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DataController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/factories/ModelFactory.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/migrations/2018_08_27_114952_create_air_temp_table.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/api.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/app.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/AuthController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/RoleController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Middleware/ScopeBouncer.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Middleware/Authenticate.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/seeds/BouncerSeeder.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MonitorController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Air.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/PriDeviceInfo.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/factories/HisdataFactory.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/seeds/UserSeeder.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Light.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Liquid.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DevicetypeController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Area.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MenuController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/traits/UserPrivilege.php</file>
         </group>
     </open-files>
 </project-private>

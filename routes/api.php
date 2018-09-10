@@ -69,6 +69,9 @@ Route::group([
     Route::resource('data', 'DataController@index');
     
     Route::get('monitor/index', 'MonitorController@index');
+    Route::get('monitor/device', 'MonitorController@device');
+    Route::post('monitor/data', 'MonitorController@deviceData');
+    Route::post('monitor/realdata', 'MonitorController@deviceRealData');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

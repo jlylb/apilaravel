@@ -22,4 +22,8 @@ class PriDeviceInfo extends Model
         return $this->hasOne('\App\Area', 'AreaId', 'AreaId');
     }
     
+    public function types() {
+        return $this->hasOne('\App\DeviceType', 'dt_typeid', 'dpt_id');
+    }
+    
 }

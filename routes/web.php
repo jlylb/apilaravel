@@ -10,6 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 Route::get('/', 'HomeController@welcome')->name('welcome');
 
@@ -29,6 +31,31 @@ Route::group(['namespace' => 'admin'], function () {
     Route::get('deviceinfo/devicetype/all', 'DeviceinfoController@getDeviceType');
 });
 
+Route::get('/date/{day}', function($seldate) {
+
+        $zhStart = Carbon::now();
+        $zhEnd = Carbon::now();
+        $date = [];
+        switch ($seldate) {
+            case 'day':
+                $date = [$zhStart->startOfDay()->toDateTimeString(), $zhEnd->endOfDay()->toDateTimeString()];
+                break;
+            case 'week':
+                $start = $zhStart->startOfWeek(Carbon::MONDAY);
+                $end = $zhEnd->endOfWeek(Carbon::SUNDAY);
+                $date = [$start->toDateTimeString(), $end->toDateTimeString()];
+                break;
+            case 'month':
+                $date = [$zhStart->startOfMonth()->toDateTimeString(), $zhEnd->endOfMonth()->toDateTimeString()];
+                break;
+            case 'year':
+                $date = [$zhStart->startOfYear()->toDateTimeString(), $zhEnd->endOfYear()->toDateTimeString()];
+                break;
+            default:
+                break;
+        }
+        return $date;
+});
 
 
 //Route::group([

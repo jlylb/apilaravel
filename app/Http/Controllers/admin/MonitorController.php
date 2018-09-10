@@ -5,6 +5,9 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Area;
+use App\PriDeviceInfo;
+use DB;
+use Carbon\Carbon;
 /**
  * 监控中心
  *
@@ -12,6 +15,11 @@ use App\Area;
  */
 class MonitorController extends Controller {
     
+    /**
+     * 获取大棚
+     * @param Request $request
+     * @return array
+     */
     public function index(Request $request) {
         $user = $request->user();
         $companyId = $user->Co_ID;
@@ -31,5 +39,214 @@ class MonitorController extends Controller {
             }
         }
         return ['status'=>1, 'province'=>$province, 'city'=>$city];
+    }
+    
+    /**
+     * 获取设备
+     * @param Request $request
+     * @return array
+     */
+    public function device(Request $request) {
+        $companyId = $request->input('cid');
+        $areaId = $request->input('value');
+        $device = PriDeviceInfo::where('Co_ID', '=', $companyId)
+                ->where('AreaId','=',$areaId)
+                ->with(['types'=>function($query){
+                    $query->select(['dt_typename', 'dt_typememo', 'dt_hisdata_table', 'dt_rtdata_table', 'dt_typeid']);
+                }])
+                ->select(['AreaId', 'dpt_id', 'pdi_name', 'Co_ID',DB::raw('group_concat(pdi_index) as indexs')])
+                ->groupBy('dpt_id')
+                ->get()
+                ->toArray();
+
+        return [ 'status'=>1, 'devices'=>$device ];
+    }
+    
+    /**
+     * 获取历史数据
+     * @param Request $request
+     * @return array
+     */
+    public function deviceData(Request $request) {
+        $pdi = $request->input('indexs');
+        $table = $request->input('types.dt_hisdata_table', '');
+        if(empty($table)) {
+            return [ 'status'=>0, 'msg'=>'数据表不存在' ];
+        }
+        $typeId = $request->input('dpt_id');
+        $fields = $this->getFields($typeId, $table);
+        $betweenTime = $this->getTime($request);
+        $query = DB::query();
+        if($betweenTime) {
+            $query->whereBetween('hd_datetime', $betweenTime);
+        }
+        $device = $query->from($table)
+                ->whereIn('pdi_index', explode(',', trim($pdi)))
+                ->select($fields)
+                ->get();
+        $result = [];
+        if($device) {
+            $result = $this->format($device, $table);
+        }
+
+        return [ 'status'=>1, 'devices'=>$result ];
+    }
+    
+    /**
+     * 获取实时数据
+     * @param Request $request
+     * @return array
+     */
+    public function deviceRealData(Request $request) {
+        $pdi = $request->input('indexs');
+        $table = $request->input('types.dt_rtdata_table', '');
+        if(empty($table)) {
+            return [ 'status'=>0, 'msg'=>'数据表不存在' ];
+        }
+        $typeId = $request->input('dpt_id');
+        $fields = $this->getFields($typeId, $table);
+        $model = $this->mapModels()[$table];
+        $query = $model::query();
+        $device = $query->from($table)
+                ->whereIn('pdi_index', explode(',', trim($pdi)))
+                ->select($fields)
+//                ->with(['device'=>function($query){
+//                    $query->select(['pdi_index', 'pdi_name']);
+//                }])
+                ->with(['deviceStatus'=>function($query){
+                    $query->select(['pdi_index', 'rs_status']);
+                }])
+                ->get();
+        $result = [];
+        if($device) {
+            $result = $this->formatReal($device, $table);
+        }
+
+        return [ 'status'=>1, 'devices'=>$result ];
+    }
+    
+    
+    /**
+     * 返回表字段类型
+     * @param int $typeId
+     * @return array
+     */
+    protected function getFields($typeId, $table) {
+        $fieldsArr = [
+            1 => ['pdi_index', 'hd_upscurr', 'hd_datetime'],
+        ];
+        return isset($fieldsArr[$typeId])?$fieldsArr[$typeId]:['*'];
+    }
+    
+    /**
+     * 获取时间范围
+     * @param Request $request
+     * @return array
+     */
+    protected function getTime(Request $request) {
+        $seldate = $request->input('selectDate');
+        $sdate = $request->input('searchDate');
+        if($sdate) {
+            return $sdate;
+        }
+        $zhStart = Carbon::now();
+        $zhEnd = Carbon::now();
+        $date = [];
+        switch ($seldate) {
+            case 'day':
+                $date = [$zhStart->startOfDay()->toDateTimeString(), $zhEnd->endOfDay()->toDateTimeString()];
+                break;
+            case 'week':
+                $start = $zhStart->startOfWeek(Carbon::MONDAY);
+                $end = $zhEnd->endOfWeek(Carbon::SUNDAY);
+                $date = [$start->toDateTimeString(), $end->toDateTimeString()];
+                break;
+            case 'month':
+                $date = [$zhStart->startOfMonth()->toDateTimeString(), $zhEnd->endOfMonth()->toDateTimeString()];
+                break;
+            case 'year':
+                $date = [$zhStart->startOfYear()->toDateTimeString(), $zhEnd->endOfYear()->toDateTimeString()];
+                break;
+            default:
+                break;
+        }
+        return $date;
+    }
+    
+    /**
+     * 表映射字段
+     * @return array
+     */
+    protected function mapFields() {
+        return [
+            't_hisdata_air' => ['temp'=>'hd_temp', 'wet'=>'hd_wet'],
+            't_hisdata_liquid' => ['liquid'=>'hd_level'],
+            't_hisdata_soil' => ['temp'=>'hd_temp', 'salt'=>'hd_salt'],
+            't_hisdata_co2' => ['co2'=>'hd_co2_concentration'],
+            't_hisdata_light' => ['light'=>'hd_light_intensity'],
+            't_realdata_air' => ['rd_temp'=>'温度', 'rd_wet'=>'湿度'],
+            't_realdata_liquid' => ['rd_level'=>'水位'],
+            't_realdata_soil' => ['rd_temp'=>'温度', 'rd_salt'=>'湿度'],
+            't_realdata_co2' => ['rd_co2_concentration'=>'浓度'],
+            't_realdata_light' => ['rd_light_intensity'=>'光照度'],
+        ];
+    }
+    
+
+    /**
+     * 表对应模型
+     * @return type
+     */
+    protected function mapModels() {
+        return [
+            't_hisdata_air' => '\App\Air',
+            't_hisdata_liquid' => '\App\Liquid',
+            't_hisdata_soil' => '\App\Soil',
+            't_hisdata_co2' => '\App\Co2',
+            't_hisdata_light' => '\App\Light',
+            't_realdata_air' => '\App\RealAir',
+            't_realdata_liquid' => '\App\RealLiquid',
+            't_realdata_soil' => '\App\RealSoil',
+            't_realdata_co2' => '\App\RealCo2',
+            't_realdata_light' => '\App\RealLight',
+        ];
+    }
+    /**
+     * 格式化实时数据
+     * @param array $data
+     * @param string $table
+     * @return array
+     */
+    protected function formatReal($data, $table) {
+        $map = $this->mapFields();
+        $field = $map[$table];
+        $result = [];
+        foreach ($data as $item) {
+            $params = [];
+            foreach ($field as $k => $v) {
+                $params[$v] = [$item->{$k},$v];
+            }
+            $item['params'] = $params;
+            $result[$item->pdi_index] = $item;
+        }
+        return $result;
+    }
+    
+    /**
+     * 格式化历史数据
+     * @param array $data
+     * @param string $table
+     * @return array
+     */
+    protected function format($data, $table) {
+        $map = $this->mapFields();
+        $field = $map[$table];
+        $result = [];
+        foreach ($data as $item) {
+            foreach ($field as $k => $v) {
+                $result[$item->pdi_index][$k][] = [strtotime($item->hd_datetime)*1000, $item->{$v}];
+            }
+        }
+        return $result;
     }
 }
