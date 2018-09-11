@@ -72,6 +72,9 @@ Route::group([
     Route::get('monitor/device', 'MonitorController@device');
     Route::post('monitor/data', 'MonitorController@deviceData');
     Route::post('monitor/realdata', 'MonitorController@deviceRealData');
+    
+    Route::get('userlog', 'UserLogController@index');
+    Route::post('control/{pdi}/update', 'ControlController@update');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

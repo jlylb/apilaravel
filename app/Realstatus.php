@@ -11,4 +11,6 @@ class Realstatus extends Model
     protected $primaryKey = 'rs_index';
     
     public $timestamps = false;
+    
+    protected $fillable = ['rs_status', 'rs_updatetime'];
 }

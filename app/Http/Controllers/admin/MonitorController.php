@@ -68,7 +68,11 @@ class MonitorController extends Controller {
      * @return array
      */
     public function deviceData(Request $request) {
+        
+        $perPage = $request->input('pageSize',15);
         $pdi = $request->input('indexs');
+        $showType = $request->input('showType', 1);
+        
         $table = $request->input('types.dt_hisdata_table', '');
         if(empty($table)) {
             return [ 'status'=>0, 'msg'=>'数据表不存在' ];
@@ -80,16 +84,23 @@ class MonitorController extends Controller {
         if($betweenTime) {
             $query->whereBetween('hd_datetime', $betweenTime);
         }
-        $device = $query->from($table)
+        if($showType==2) {
+            $device = $query->from($table)
+                ->whereIn('pdi_index', explode(',', trim($pdi)))
+                ->select($fields)
+                ->paginate($perPage);
+            return [ 'status'=>1, 'data'=>$device, 'labels'=> $this->getFieldsDesc($table) ];
+        } else {
+            $device = $query->from($table)
                 ->whereIn('pdi_index', explode(',', trim($pdi)))
                 ->select($fields)
                 ->get();
-        $result = [];
-        if($device) {
-            $result = $this->format($device, $table);
+            $result = [];
+            if($device) {
+                $result = $this->format($device, $table);
+            }
+            return [ 'status'=>1, 'devices'=>$result ];
         }
-
-        return [ 'status'=>1, 'devices'=>$result ];
     }
     
     /**
@@ -147,7 +158,9 @@ class MonitorController extends Controller {
         $seldate = $request->input('selectDate');
         $sdate = $request->input('searchDate');
         if($sdate) {
-            return $sdate;
+            $zhStart = Carbon::parse($sdate[0]);
+            $zhEnd = Carbon::parse($sdate[1]);
+            return [$zhStart->startOfDay()->toDateTimeString(), $zhEnd->endOfDay()->toDateTimeString()];
         }
         $zhStart = Carbon::now();
         $zhEnd = Carbon::now();
@@ -211,6 +224,28 @@ class MonitorController extends Controller {
             't_realdata_light' => '\App\RealLight',
         ];
     }
+    
+    /**
+     * 表对应字段描述
+     * @return type
+     */
+    protected function getFieldsDesc($table) {
+        $desc = [
+            't_hisdata_air' => ['hd_index'=>'编号','rd_updatetime'=>'更新时间','hd_datetime'=>'创建时间','pdi_index'=>'设备编号','hd_temp'=>'温度', 'hd_wet'=>'湿度'],
+            't_hisdata_liquid' => ['hd_index'=>'编号','rd_updatetime'=>'更新时间','hd_datetime'=>'创建时间','pdi_index'=>'设备编号','hd_level'=>'液位'],
+            't_hisdata_soil' => ['hd_index'=>'编号','rd_updatetime'=>'更新时间','hd_datetime'=>'创建时间','pdi_index'=>'设备编号','hd_temp'=>'温度', 'hd_salt'=>'盐碱度'],
+            't_hisdata_co2' => ['hd_index'=>'编号','rd_updatetime'=>'更新时间','hd_datetime'=>'创建时间','pdi_index'=>'设备编号','hd_co2_concentration'=>'浓度'],
+            't_hisdata_light' => ['hd_index'=>'编号','rd_updatetime'=>'更新时间','hd_datetime'=>'创建时间','pdi_index'=>'设备编号','hd_light_intensity'=>'光照度'],
+            
+            't_realdata_air' => [ 'rd_updatetime'=>'更新时间', 'pdi_index'=>'设备编号', 'rd_temp'=>'温度', 'rd_wet'=>'湿度'],
+            't_realdata_liquid' => [ 'rd_updatetime'=>'更新时间', 'pdi_index'=>'设备编号', 'rd_level'=>'液位'],
+            't_realdata_soil' => [ 'rd_updatetime'=>'更新时间', 'pdi_index'=>'设备编号', 'rd_temp'=>'温度', 'rd_salt'=>'盐碱度'],
+            't_realdata_co2' => ['rd_updatetime'=>'更新时间', 'pdi_index'=>'设备编号', 'rd_co2_concentration'=>'浓度'],
+            't_realdata_light' => [ 'rd_updatetime'=>'更新时间', 'pdi_index'=>'设备编号', 'rd_light_intensity'=>'光照度'],
+        ];
+        return $desc[$table];
+    }
+    
     /**
      * 格式化实时数据
      * @param array $data
