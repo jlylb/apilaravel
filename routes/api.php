@@ -75,6 +75,8 @@ Route::group([
     
     Route::get('userlog', 'UserLogController@index');
     Route::post('control/{pdi}/update', 'ControlController@update');
+    Route::get('control/device', 'ControlController@device');
+    Route::resource('warnclass', 'WarnclassController');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

@@ -26,4 +26,8 @@ class PriDeviceInfo extends Model
         return $this->hasOne('\App\DeviceType', 'dt_typeid', 'dpt_id');
     }
     
+    public function deviceStatus() {
+        return $this->hasOne('\App\Realstatus', 'pdi_index', 'pdi_index');
+    }
+    
 }

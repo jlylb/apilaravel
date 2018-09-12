@@ -259,7 +259,7 @@ class MonitorController extends Controller {
         foreach ($data as $item) {
             $params = [];
             foreach ($field as $k => $v) {
-                $params[$v] = [$item->{$k},$v];
+                $params[$k] = [$item->{$k},$v];
             }
             $item['params'] = $params;
             $result[$item->pdi_index] = $item;
