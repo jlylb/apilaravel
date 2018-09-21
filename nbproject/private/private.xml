@@ -5,30 +5,41 @@
         <group>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/seeds/Hisdata.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UserController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/web.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/seeds/Realdata.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/factories/RealdataFactory.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DataController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/factories/ModelFactory.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/SyUser.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/WarndefineController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/RealLight.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/PriDeviceInfo.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Models/Device.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/WarnnotifyController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Realwarn.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/database/factories/HisdataFactory.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Light.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Realstatus.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Liquid.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Warnuser.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/RealSoil.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DeviceinfoController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Co2.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Soil.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/WarnclassController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/api.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MonitorController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Air.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/AuthController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/RealLiquid.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/WarnuserController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/RealAir.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/RealCo2.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UserLogController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/RealwarnController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/ControlController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Warnnotify.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/WarnClass.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MenuController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/traits/UserPrivilege.php</file>
         </group>

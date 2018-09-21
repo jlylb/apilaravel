@@ -29,6 +29,8 @@ Route::group(['namespace' => 'admin'], function () {
     Route::get('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread1');
     Route::resource('deviceinfo', 'DeviceinfoController');
     Route::get('deviceinfo/devicetype/all', 'DeviceinfoController@getDeviceType');
+    Route::resource('warnnotify', 'WarnnotifyController');
+    Route::resource('warnuser', 'WarnuserController');
 });
 
 Route::get('/date/{day}', function($seldate) {

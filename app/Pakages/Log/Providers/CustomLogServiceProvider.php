@@ -27,21 +27,22 @@ class CustomLogServiceProvider extends ActionLogServiceProvider
         ], 'config');
 
         $model = config("actionlog");
+        
+        $post = app('request')->all();
   
 		if($model){
 			foreach($model as  $v) {
 				
-			$v::updated(function($data){
-					ActionLog::createActionLog('update',"更新的id:".$data->id);
+			$v::updated(function($data)use($post){
+					ActionLog::createActionLog('update',"更新的id:".$data->getKey(). json_encode($post));
 				});
 			
-			$v::created(function($data){
-				ActionLog::createActionLog('add',"添加的id:".$data->id);
+			$v::created(function($data)use($post){
+				ActionLog::createActionLog('add',"添加的id:".$data->getKey().json_encode($post));
 			});
 			
-			$v::deleted(function($data){
-				ActionLog::createActionLog('delete',"删除的id:".$data->id);
-
+			$v::deleted(function($data)use($post){
+				ActionLog::createActionLog('delete',"删除的id:".$data->getKey().json_encode($post));
 			});
 			
 			}

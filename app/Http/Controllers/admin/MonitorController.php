@@ -49,8 +49,10 @@ class MonitorController extends Controller {
     public function device(Request $request) {
         $companyId = $request->input('cid');
         $areaId = $request->input('value');
+        $deviceTypeIds = config('device.monitor'); 
         $device = PriDeviceInfo::where('Co_ID', '=', $companyId)
                 ->where('AreaId','=',$areaId)
+                ->whereIn('dpt_id', array_keys($deviceTypeIds))
                 ->with(['types'=>function($query){
                     $query->select(['dt_typename', 'dt_typememo', 'dt_hisdata_table', 'dt_rtdata_table', 'dt_typeid']);
                 }])
@@ -59,7 +61,7 @@ class MonitorController extends Controller {
                 ->get()
                 ->toArray();
 
-        return [ 'status'=>1, 'devices'=>$device ];
+        return [ 'status'=>1, 'devices'=>$device, 'icon'=>$deviceTypeIds ];
     }
     
     /**
@@ -116,7 +118,13 @@ class MonitorController extends Controller {
         }
         $typeId = $request->input('dpt_id');
         $fields = $this->getFields($typeId, $table);
-        $model = $this->mapModels()[$table];
+        $model = '';
+        if(isset($this->mapModels()[$table])){
+            $model = $this->mapModels()[$table];
+        }
+        if(!$model) {
+            return [ 'status'=>1, 'devices'=>[] ];
+        }
         $query = $model::query();
         $device = $query->from($table)
                 ->whereIn('pdi_index', explode(',', trim($pdi)))

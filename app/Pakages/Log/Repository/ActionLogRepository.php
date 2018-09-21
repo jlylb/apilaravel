@@ -25,8 +25,8 @@ class ActionLogRepository {
         $defaultGuard = app('auth')->getDefaultDriver();
  
     	if(auth($defaultGuard)->check()){
-    		$actionLog->userid = auth($defaultGuard)->user()->id;
-    		$actionLog->username = auth($defaultGuard)->user()->name;
+    		$actionLog->userid = auth($defaultGuard)->user()->userid;
+    		$actionLog->username = auth($defaultGuard)->user()->username;
     	}else{
     		$actionLog->uid = 0;
     		$actionLog->username ="访客";

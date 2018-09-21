@@ -34,16 +34,23 @@ class ControlController extends Controller
         if(!$isExist) {
             return ['status'=>0, 'msg'=>'该公司不存在此设备'];
         }
-        $field = $request->input('field', 'rs_status');
 
         $status = $request->input('value');
+        $field = $request->input('field');
+        $dptId = $request->input('dpt_id');
         
-        $statusInfo = Realstatus::where('pdi_index','=',$pdi)->first();
+        $models = config('device.models');
+        if(!array_key_exists($dptId, $models)){
+             return ['status'=>0, 'msg'=>'设备类型不存在'];
+        }
+        $model = $models[$dptId];
+
+        $statusInfo = $model::where('pdi_index','=',$pdi)->first();
         if(!$statusInfo) {
             return ['status'=>0, 'msg'=>'设备状态数据不存在'];
         }
         
-        $statusInfo->rs_status = $status;
+        $statusInfo->$field = $status;
         
         if($statusInfo->save()) {
             return ['status'=>1, 'msg'=>'状态保存成功'];
@@ -58,30 +65,49 @@ class ControlController extends Controller
      * @return array
      */
     public function device(Request $request) {
-        $companyId = $request->input('cid');
+        $user = $this->user();
+        $companyId = $user->Co_ID;
         $areaId = $request->input('value');
+        $deviceTypeIds = config('device.control');
         $device = PriDeviceInfo::where('Co_ID', '=', $companyId)
                 ->where('AreaId','=',$areaId)
                 ->with(['types'=>function($query){
                     $query->select(['dt_typename', 'dt_typememo', 'dt_typeid']);
                 }])
-                ->with(['deviceStatus'=>function($query){
-                    $query->select(['pdi_index', 'rs_status']);
-                }])
-//                ->with(['area'=>function($query){
-//                    $query->select(['AreaId', 'AreaName', 'Fid', 'Co_ID']);
-//                }])
+                ->whereIn('dpt_id', array_keys($deviceTypeIds))
                 ->select(['AreaId', 'dpt_id', 'pdi_name', 'Co_ID', 'pdi_index'])
                 ->get();
-
         $types = [];
         $result = [];
         foreach ($device->toArray() as  $v) {
-            $v['device_status'] = $v['device_status']?$v['device_status']:['pdi_index'=>$v['pdi_index']];
             $result[$v['AreaId']][$v['dpt_id']][] = $v;
             $types[$v['AreaId']][$v['dpt_id']] = $v['types'];
         }
-
-        return [ 'status'=>1, 'devices' => $result, 'types' => $types ];
+        return [ 'status'=>1, 'devices' => $result, 'types' => $types, 'icon'=>$deviceTypeIds ];
+    }
+    
+    /**
+     * 获取设备参数
+     * @param Request $request
+     * @return array
+     */
+    public function deviceData(Request $request) {
+        $dptId = $request->input('dpt_id');
+        $models = config('device.models');
+        if(!array_key_exists($dptId, $models)){
+             return ['status'=>0, 'msg'=>'设备类型不存在'];
+        }
+        $model = $models[$dptId];
+        $pdiIndex = $request->input('pdi_index');
+        $data = $model::whereIn('pdi_index', $pdiIndex)
+                ->select(['pdi_index', 'device_status', 'running_status'])
+                ->get()->keyBy('pdi_index')->toArray();
+        if(!$data) {
+            $data = [];
+            foreach ($pdiIndex as $index) {
+                $data[$index]=['device_status'=>1, 'running_status'=>1];
+            }
+        }
+        return [ 'status'=>1, 'devicesData' => $data ];
     }
 }
