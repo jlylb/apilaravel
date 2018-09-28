@@ -25,12 +25,12 @@ return [
         121 => '\App\Models\Tongfei', 
         122 => '\App\Models\Buguang',
     ],
-    'surfix' => [ //'hwarn' => '上限告警', 'lwarn' => '下限告警', 'consta' => '连接状态',
-        80 => [ 'envihumi' => '湿度', 'envitemp' => '温度',  'num'=> 'rd_envihumi_num' ], 
-        81 => [ 'Concentration'=>'浓度', 'num'=> 'rd_Concentration_num'], 
-        83 => [ 'LightIntensity'=>'光照度', 'num'=> 'rd_LightIntensity_num', ], 
-        84 => [ 'Soiltemp' => '温度', 'Soilhumi' => '湿度', 'num'=> 'rd_SoilTH_num' ], 
-        82 => [ 'LevelValue' => '液位', 'num'=> 'rd_LevelValue_num' ], 
+    'surfix' => [ 
+        80 => [  'envitemp' => '温度', 'envihumi' => '湿度', ], 
+        81 => [ 'Concentration'=>'浓度', ], 
+        83 => [ 'LightIntensity'=>'光照度', ], 
+        84 => [ 'Soiltemp' => '温度', 'Soilhumi' => '湿度',], 
+        82 => [ 'LevelValue' => '液位' ], 
     ],
     'itemField' => [
         'hwarn'=>'上限状态', 'lwarn'=>'下限状态',
@@ -41,6 +41,20 @@ return [
         83 => [ 'LightIntensity' , '连接状态' ], 
         84 => [ 'envihumi' , '连接状态' ], 
         82 => [ 'LevelValue' , '连接状态' ], 
+    ],
+    'num' => [ 
+        80 => 'rd_envihumi_num', 
+        81 => 'rd_Concentration_num', 
+        83 => 'rd_LightIntensity_num', 
+        84 => 'rd_SoilTH_num', 
+        82 => 'rd_LevelValue_num', 
+    ],
+    'units' => [ 
+        80 => [  'envitemp' => '°C', 'envihumi' => '%', ], 
+        81 => [ 'Concentration'=>'°C', ], 
+        83 => [ 'LightIntensity'=>'°C', ], 
+        84 => [ 'Soiltemp' => '°C', 'Soilhumi' => '%',], 
+        82 => [ 'LevelValue' => 'M' ], 
     ],
 ];
 

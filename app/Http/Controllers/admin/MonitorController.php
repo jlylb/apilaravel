@@ -261,8 +261,9 @@ class MonitorController extends Controller {
         $field = config('device.itemField');
         $surfix=config('device.surfix')[$dptId];
         $consta = config('device.consta')[$dptId];
+        $numField = config('device.num')[$dptId];
+        $unit =  config('device.units')[$dptId];
         $result = [];
-        $numField = $surfix['num'];
         foreach ($data as $item) {
             $num = $item->{$numField};
             $num = $num ? $num : 10;
@@ -270,33 +271,36 @@ class MonitorController extends Controller {
             for($i = 1; $i <= $num; $i++) {
                 $param = [];
                 foreach ($surfix as $k => $v) {
-                    if($k==='num'){
-                        continue;
-                    }
                     $keyPrefix=$prefix.$k.$i;
                     $keyHwarn=$keyPrefix.'hwarn';
                     $keyLwarn=$keyPrefix.'lwarn';
                     $keyPrefix=$prefix.$k.$i;
-                    $param[$keyPrefix] = [ 
-                        'name'=>$v.$i, 
-                        'value'=>$item->$keyPrefix,
+                    $param[$k] = [ 
+                        $k.'_name'=>$v.$i, 
+                        $k.'_value'=>$item->$keyPrefix.' '.$unit[$k],
                         'hwarn_name'=>'上限状态',
-                        'hwarn'=>$item->$keyHwarn,
+                        'hwarn_value'=>$item->$keyHwarn,
                         'lwarn_name'=>'下限状态',
-                        'lwarn'=>$item->$keyLwarn,
+                        'lwarn_value'=>$item->$keyLwarn,
                     ];
                 }
                 list($constaField, $constaName) = $consta;
                 $constaKey = $prefix.$constaField.$i.'consta';
-                $param[$constaKey] = [
-                    'name'=>$constaName, 
-                    'value'=>$item->{$constaKey},
+                $param['consta'] = [
+                    'consta_name'=>$constaName, 
+                    'consta_value'=>$item->{$constaKey},
                 ];
                 $params[] = $param;               
             }
             $result['rd_updatetime'] = $item->rd_updatetime;
             $result['rd_NetCom'] = $item->rd_NetCom;
             $result['pdi_index'] = $item->pdi_index;
+            
+            foreach ($surfix as $k => $v) {
+                $fields[] = $k;
+            }
+            $fields[] = 'consta';
+            $result['fields'] = $fields;
             // $item['params'] = $params;
             $result['items'] = $params;
         }
