@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Liquid extends Model
 {
-    protected $table = 't_hisdata_liquid';
+    protected $table = 't_hisdata_levelvalue';
     
     protected $primaryKey = 'hd_index';
     

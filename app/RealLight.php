@@ -8,7 +8,7 @@ class RealLight extends Model
 {
     use \App\Models\device;
     
-    protected $table = 't_realdata_light';
+    protected $table = 't_realdata_lightintensity';
     
     protected $primaryKey = 'pdi_index';
     

@@ -1,16 +1,16 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RealCo2 extends Model
+class Phpwarn extends Model
 {
-    use \App\Models\device;
-    
-    protected $table = 't_realdata_co2concentration';
+    protected $table = 't_phpwarn';
     
     protected $primaryKey = 'pdi_index';
+    
+    protected $guarded = [];
     
     public $timestamps = false;
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Light extends Model
 {
-    protected $table = 't_hisdata_light';
+    protected $table = 't_hisdata_lightintensity';
     
     protected $primaryKey = 'hd_index';
     

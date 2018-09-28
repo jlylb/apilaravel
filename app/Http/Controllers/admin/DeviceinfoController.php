@@ -44,7 +44,7 @@ class DeviceinfoController extends Controller
         if(!empty($name)) {
             $query->where('pdi_code', 'like', $name.'%');
         }
-        $typeId = $request->input('type_id', '');
+        $typeId = $request->input('dpt_id', '');
         if(!empty($typeId)) {
             $query->where('dpt_id', '=', trim($typeId));
         }

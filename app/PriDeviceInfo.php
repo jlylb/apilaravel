@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PriDeviceInfo extends Model
 {
+    use \App\Models\Traits\Company; 
+    
     protected $table = 't_prideviceinfo';
     
     protected $primaryKey = 'pdi_index';

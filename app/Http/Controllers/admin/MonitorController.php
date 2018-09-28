@@ -112,16 +112,18 @@ class MonitorController extends Controller {
      */
     public function deviceRealData(Request $request) {
         $pdi = $request->input('indexs');
-        $table = $request->input('types.dt_rtdata_table', '');
+        $table = trim($request->input('types.dt_rtdata_table', ''));
         if(empty($table)) {
             return [ 'status'=>0, 'msg'=>'数据表不存在' ];
         }
+        $table = strtolower($table);
         $typeId = $request->input('dpt_id');
-        $fields = $this->getFields($typeId, $table);
+        $fields = ['*'];
         $model = '';
         if(isset($this->mapModels()[$table])){
             $model = $this->mapModels()[$table];
         }
+
         if(!$model) {
             return [ 'status'=>1, 'devices'=>[] ];
         }
@@ -129,16 +131,10 @@ class MonitorController extends Controller {
         $device = $query->from($table)
                 ->whereIn('pdi_index', explode(',', trim($pdi)))
                 ->select($fields)
-//                ->with(['device'=>function($query){
-//                    $query->select(['pdi_index', 'pdi_name']);
-//                }])
-                ->with(['deviceStatus'=>function($query){
-                    $query->select(['pdi_index', 'rs_status']);
-                }])
                 ->get();
         $result = [];
         if($device) {
-            $result = $this->formatReal($device, $table);
+            $result = $this->formatReal($device, $typeId);
         }
 
         return [ 'status'=>1, 'devices'=>$result ];
@@ -205,6 +201,7 @@ class MonitorController extends Controller {
             't_hisdata_soil' => ['temp'=>'hd_temp', 'salt'=>'hd_salt'],
             't_hisdata_co2' => ['co2'=>'hd_co2_concentration'],
             't_hisdata_light' => ['light'=>'hd_light_intensity'],
+            
             't_realdata_air' => ['rd_temp'=>'温度', 'rd_wet'=>'湿度'],
             't_realdata_liquid' => ['rd_level'=>'水位'],
             't_realdata_soil' => ['rd_temp'=>'温度', 'rd_salt'=>'湿度'],
@@ -220,16 +217,16 @@ class MonitorController extends Controller {
      */
     protected function mapModels() {
         return [
-            't_hisdata_air' => '\App\Air',
-            't_hisdata_liquid' => '\App\Liquid',
-            't_hisdata_soil' => '\App\Soil',
-            't_hisdata_co2' => '\App\Co2',
-            't_hisdata_light' => '\App\Light',
-            't_realdata_air' => '\App\RealAir',
-            't_realdata_liquid' => '\App\RealLiquid',
-            't_realdata_soil' => '\App\RealSoil',
-            't_realdata_co2' => '\App\RealCo2',
-            't_realdata_light' => '\App\RealLight',
+            't_hisdata_envtemphumi' => '\App\Air',
+            't_hisdata_levelvalue' => '\App\Liquid',
+            't_hisdata_soilcondth' => '\App\Soil',
+            't_hisdata_co2concentration' => '\App\Co2',
+            't_hisdata_lightintensity' => '\App\Light',
+            't_realdata_envtemphumi' => '\App\RealAir',
+            't_realdata_levelvalue' => '\App\RealLiquid',
+            't_realdata_soilcondth' => '\App\RealSoil',
+            't_realdata_co2concentration' => '\App\RealCo2',
+            't_realdata_lightintensity' => '\App\RealLight',
         ];
     }
     
@@ -260,17 +257,48 @@ class MonitorController extends Controller {
      * @param string $table
      * @return array
      */
-    protected function formatReal($data, $table) {
-        $map = $this->mapFields();
-        $field = $map[$table];
+    protected function formatReal($data, $dptId, $prefix='rd_') {
+        $field = config('device.itemField');
+        $surfix=config('device.surfix')[$dptId];
+        $consta = config('device.consta')[$dptId];
         $result = [];
+        $numField = $surfix['num'];
         foreach ($data as $item) {
+            $num = $item->{$numField};
+            $num = $num ? $num : 10;
             $params = [];
-            foreach ($field as $k => $v) {
-                $params[$k] = [$item->{$k},$v];
+            for($i = 1; $i <= $num; $i++) {
+                $param = [];
+                foreach ($surfix as $k => $v) {
+                    if($k==='num'){
+                        continue;
+                    }
+                    $keyPrefix=$prefix.$k.$i;
+                    $keyHwarn=$keyPrefix.'hwarn';
+                    $keyLwarn=$keyPrefix.'lwarn';
+                    $keyPrefix=$prefix.$k.$i;
+                    $param[$keyPrefix] = [ 
+                        'name'=>$v.$i, 
+                        'value'=>$item->$keyPrefix,
+                        'hwarn_name'=>'上限状态',
+                        'hwarn'=>$item->$keyHwarn,
+                        'lwarn_name'=>'下限状态',
+                        'lwarn'=>$item->$keyLwarn,
+                    ];
+                }
+                list($constaField, $constaName) = $consta;
+                $constaKey = $prefix.$constaField.$i.'consta';
+                $param[$constaKey] = [
+                    'name'=>$constaName, 
+                    'value'=>$item->{$constaKey},
+                ];
+                $params[] = $param;               
             }
-            $item['params'] = $params;
-            $result[$item->pdi_index] = $item;
+            $result['rd_updatetime'] = $item->rd_updatetime;
+            $result['rd_NetCom'] = $item->rd_NetCom;
+            $result['pdi_index'] = $item->pdi_index;
+            // $item['params'] = $params;
+            $result['items'] = $params;
         }
         return $result;
     }

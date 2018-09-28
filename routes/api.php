@@ -85,6 +85,10 @@ Route::group([
     Route::resource('warnuser', 'WarnuserController');
     
     Route::get('alarm/device', 'AlarmController@device');
+    Route::get('report', 'ReportController@index')->name('api.report.historywarn');
+    Route::get('report/historysum', 'ReportController@historysum')->name('api.report.historysum');
+    Route::get('report/assetsum', 'ReportController@assetsum')->name('api.report.assetsum');
+    Route::get('video', 'VideoController@index')->name('api.video.index');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

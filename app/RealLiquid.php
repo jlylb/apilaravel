@@ -8,7 +8,7 @@ class RealLiquid extends Model
 {
     use \App\Models\device;
     
-    protected $table = 't_realdata_liquid';
+    protected $table = 't_realdata_levelvalue';
     
     protected $primaryKey = 'pdi_index';
     
