@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\DB;
 class Category extends Model
 {
 
-    protected $guarded = ['action'];
+    //protected $guarded = ['action'];
+
+    protected $fillable = [
+        'name', 'name_en', 'parent_id', 'path'
+    ];
     
     public function getTreeCategory($catId=[])
     {

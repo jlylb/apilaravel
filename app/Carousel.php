@@ -6,11 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Carousel extends Model
 {
-    protected $fillable = [
-        'name', 'name_en', 'parent_id', 'path'
-    ];
-
-
+    protected $guarded = ['action'];
 
     public function flashes() {
         return $this->hasMany('\App\Flash','carousel_id');

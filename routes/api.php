@@ -59,6 +59,7 @@ Route::group([
     Route::post('notification/unreadall', 'NotificationController@unreadAll')->name('api.notification.unreadAll');
     Route::resource('post','PostController');
     Route::resource('category','CategoryController');
+    Route::resource('carousel','CarouselController');
 
 });
 
