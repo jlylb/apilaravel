@@ -38,7 +38,38 @@ class MonitorController extends Controller {
                 $city[$v['Fid']][] = ['value'=>$v['AreaId'],'label'=>$v['AreaName'], 'cid'=>$v['Co_ID']];
             }
         }
-        return ['status'=>1, 'province'=>$province, 'city'=>$city];
+        
+//        $deviceDesc = config('device.desc');
+//        $deviceType = [];
+//        foreach ($deviceDesc as $k => $v) {
+//            $deviceType[] = [ 'value' => $k, 'label' => $v['name'] ];
+//        }
+        $info = $this -> getAreaDevices();
+        return ['status'=>1, 'province'=>$province, 'city'=>$city, 'deviceType' => $info['deviceType'], 'device' => $info['device']];
+    }
+    
+    /**
+     * 获取公司所有区域设备
+     */
+    public function getAreaDevices() {
+        $deviceTypeIds = config('device.monitor'); 
+        $devices = PriDeviceInfo::whereIn('dpt_id', array_keys($deviceTypeIds))
+        ->with(['types'=>function($query){
+            $query->select(['dt_typename', 'dt_typememo', 'dt_typeid']);
+        }])
+        ->select(['AreaId', 'dpt_id', 'pdi_name', 'pdi_index'])
+        ->get()
+        ->toArray();
+        $deviceType = [];
+        $device = [];
+        foreach ($devices as $v) {
+            $deviceType[$v['AreaId']][$v['dpt_id']] = [ 'value' => $v['dpt_id'], 'label' => $v['types']['dt_typememo'] ];
+            $device[$v['AreaId']][$v['dpt_id']][] = [ 'value' => $v['pdi_index'], 'label' => $v['pdi_name'] ];
+        }
+        foreach ($deviceType as $k => $v) {
+            $deviceType[$k] = array_values($v);
+        }
+        return compact('deviceType', 'device');
     }
     
     /**
@@ -261,7 +292,8 @@ class MonitorController extends Controller {
         $field = config('device.itemField');
         $surfix=config('device.surfix')[$dptId];
         $consta = config('device.consta')[$dptId];
-        $numField = config('device.num')[$dptId];
+        $desc = config('device.desc')[$dptId];
+        $numField = $desc['num'];
         $unit =  config('device.units')[$dptId];
         $result = [];
         foreach ($data as $item) {
@@ -276,33 +308,38 @@ class MonitorController extends Controller {
                     $keyLwarn=$keyPrefix.'lwarn';
                     $keyPrefix=$prefix.$k.$i;
                     $param[$k] = [ 
-                        $k.'_name'=>$v.$i, 
-                        $k.'_value'=>$item->$keyPrefix.' '.$unit[$k],
-                        'hwarn_name'=>'上限状态',
+                        $k.'_name'=>$v, 
+                        $k.'_value'=>$item->$keyPrefix,
+                        'hwarn_name'=>$v.$i.'上限状态',
                         'hwarn_value'=>$item->$keyHwarn,
-                        'lwarn_name'=>'下限状态',
+                        'lwarn_name'=>$v.$i.'下限状态',
                         'lwarn_value'=>$item->$keyLwarn,
                     ];
                 }
                 list($constaField, $constaName) = $consta;
                 $constaKey = $prefix.$constaField.$i.'consta';
-                $param['consta'] = [
+                $param['consta'] = array_merge([],[
                     'consta_name'=>$constaName, 
                     'consta_value'=>$item->{$constaKey},
-                ];
+                ]);
                 $params[] = $param;               
             }
             $result['rd_updatetime'] = $item->rd_updatetime;
             $result['rd_NetCom'] = $item->rd_NetCom;
             $result['pdi_index'] = $item->pdi_index;
+            $result['num'] = $num;
             
             foreach ($surfix as $k => $v) {
                 $fields[] = $k;
             }
-            $fields[] = 'consta';
+            // $fields[] = 'consta';
             $result['fields'] = $fields;
+            $result['name'] = $desc['name'];
             // $item['params'] = $params;
             $result['items'] = $params;
+            $result['unit'] = $unit;
+            
+            $result['icons'] = config('device.icons');
         }
         return $result;
     }

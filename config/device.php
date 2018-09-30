@@ -7,7 +7,7 @@ return [
         83 => 'light', 
         84 => 'soil', 
         82 => 'liquid', 
-        116 => 'video'
+//        116 => 'video'
     ],
     'control' => [
         117 => 'juanlian', 
@@ -42,12 +42,12 @@ return [
         84 => [ 'envihumi' , '连接状态' ], 
         82 => [ 'LevelValue' , '连接状态' ], 
     ],
-    'num' => [ 
-        80 => 'rd_envihumi_num', 
-        81 => 'rd_Concentration_num', 
-        83 => 'rd_LightIntensity_num', 
-        84 => 'rd_SoilTH_num', 
-        82 => 'rd_LevelValue_num', 
+    'desc' => [ 
+        80 =>[ 'num' => 'rd_envihumi_num', 'name' => '环境温湿度' ], 
+        81 =>[ 'num' => 'rd_Concentration_num', 'name' => '二氧化碳' ], 
+        83 =>[ 'num' => 'rd_LightIntensity_num', 'name' => '光照度' ], 
+        84 =>[ 'num' => 'rd_SoilTH_num', 'name' => '土壤温湿度' ], 
+        82 =>[ 'num' => 'rd_LevelValue_num', 'name' => '液位' ], 
     ],
     'units' => [ 
         80 => [  'envitemp' => '°C', 'envihumi' => '%', ], 
@@ -55,6 +55,15 @@ return [
         83 => [ 'LightIntensity'=>'°C', ], 
         84 => [ 'Soiltemp' => '°C', 'Soilhumi' => '%',], 
         82 => [ 'LevelValue' => 'M' ], 
+    ],
+    'icons'=>[
+        'envitemp' => 'wendu-item-circle', 
+        'envihumi' => 'shidu-item-circle',
+        'Concentration'=>'co2',
+        'LightIntensity'=>'light',
+        'Soiltemp' => 'wendu-item', 
+        'Soilhumi' => 'shidu-item',
+        'LevelValue' => 'liquid'
     ],
 ];
 
