@@ -56,6 +56,15 @@ class DeviceinfoController extends Controller
                 $query->select(['AreaId','AreaName']);
             },
         ]);
+        $uid = $request->input('uid', '');
+        $query->select(['t_prideviceinfo.*']);
+        if($uid) {
+            $query->leftJoin('t_warnnotify', function($join)use($uid){
+                $join->on('t_prideviceinfo.pdi_index', '=', 't_warnnotify.pdi_index')
+                    ->where('wu_index', '=', $uid);
+            });
+            $query->addSelect(['wu_index', 'Wn_notifytype']);
+        }
         $users = $query-> paginate($perPage);
         
         return ['status' => 1, 'data'=>$users];
