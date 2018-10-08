@@ -65,5 +65,12 @@ return [
         'Soilhumi' => 'shidu-item',
         'LevelValue' => 'liquid'
     ],
+    'map_models' => [
+        80 => [ 'real' => '\App\RealAir', 'history' => '\App\Air' ], 
+        81 => [ 'real' => '\App\RealCo2', 'history' => '\App\Co2' ], 
+        83 => [ 'real' => '\App\RealLight', 'history' => '\App\Light' ], 
+        84 => [ 'real' => '\App\RealSoil', 'history' => '\App\Soil' ], 
+        82 => [ 'real' => '\App\RealLiquid', 'history' => '\App\Liquid' ], 
+    ]
 ];
 

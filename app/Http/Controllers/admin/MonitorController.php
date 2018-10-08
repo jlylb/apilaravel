@@ -103,37 +103,45 @@ class MonitorController extends Controller {
     public function deviceData(Request $request) {
         
         $perPage = $request->input('pageSize',15);
-        $pdi = $request->input('indexs');
         $showType = $request->input('showType', 1);
         
-        $table = $request->input('types.dt_hisdata_table', '');
-        if(empty($table)) {
-            return [ 'status'=>0, 'msg'=>'数据表不存在' ];
+        $pdi = $request->input('device');
+        $typeId = $request->input('device_type');
+
+        if(!$pdi||!$typeId) {
+            return [ 'status'=>1, 'devices'=>[] ];
         }
-        $typeId = $request->input('dpt_id');
-        $fields = $this->getFields($typeId, $table);
+        $type = 'history';
+        $models = config('device.map_models');
+        $model = $models[$typeId][$type];
+
+        if(!$model) {
+            return [ 'status'=>1, 'devices'=>[] ];
+        }
+
         $betweenTime = $this->getTime($request);
-        $query = DB::query();
+        $query = $model::query();
+
         if($betweenTime) {
-            $query->whereBetween('hd_datetime', $betweenTime);
+            $query->whereBetween('rd_updatetime', $betweenTime);
         }
-        if($showType==2) {
-            $device = $query->from($table)
-                ->whereIn('pdi_index', explode(',', trim($pdi)))
-                ->select($fields)
-                ->paginate($perPage);
-            return [ 'status'=>1, 'data'=>$device, 'labels'=> $this->getFieldsDesc($table) ];
-        } else {
-            $device = $query->from($table)
-                ->whereIn('pdi_index', explode(',', trim($pdi)))
-                ->select($fields)
-                ->get();
-            $result = [];
-            if($device) {
-                $result = $this->format($device, $table);
-            }
-            return [ 'status'=>1, 'devices'=>$result ];
+        $searchType = 'day';
+        list($group, $fields) = $this->getFields($typeId,$searchType);
+        $query
+            ->where('pdi_index', '=', trim($pdi))
+            ->select($fields);
+        if($group){
+            $query ->groupBy($group);
         }
+           
+        $device =   $query  ->get();
+        $result = [];
+        if($device) {
+            $result = $this->format($device, $typeId);
+        }
+        $result['searchType']=$searchType;
+        return [ 'status'=>1, 'devices'=>$result ];
+        
     }
     
     /**
@@ -142,26 +150,22 @@ class MonitorController extends Controller {
      * @return array
      */
     public function deviceRealData(Request $request) {
-        $pdi = $request->input('indexs');
-        $table = trim($request->input('types.dt_rtdata_table', ''));
-        if(empty($table)) {
-            return [ 'status'=>0, 'msg'=>'数据表不存在' ];
+        $pdi = $request->input('device');
+        $typeId = $request->input('device_type');
+
+        if(!$pdi||!$typeId) {
+            return [ 'status'=>1, 'devices'=>[] ];
         }
-        $table = strtolower($table);
-        $typeId = $request->input('dpt_id');
-        $fields = ['*'];
-        $model = '';
-        if(isset($this->mapModels()[$table])){
-            $model = $this->mapModels()[$table];
-        }
+        $type = 'real';
+        $models = config('device.map_models');
+        $model = $models[$typeId][$type];
 
         if(!$model) {
             return [ 'status'=>1, 'devices'=>[] ];
         }
         $query = $model::query();
-        $device = $query->from($table)
-                ->whereIn('pdi_index', explode(',', trim($pdi)))
-                ->select($fields)
+        $device = $query
+                ->where('pdi_index', '=', trim($pdi))
                 ->get();
         $result = [];
         if($device) {
@@ -177,11 +181,38 @@ class MonitorController extends Controller {
      * @param int $typeId
      * @return array
      */
-    protected function getFields($typeId, $table) {
-        $fieldsArr = [
-            1 => ['pdi_index', 'hd_upscurr', 'hd_datetime'],
-        ];
-        return isset($fieldsArr[$typeId])?$fieldsArr[$typeId]:['*'];
+    protected function getFields($typeId, $searchType='day', $num=10, $prefix='hd_', $dateField='rd_updatetime') {
+        $surfix = config('device.surfix');
+        $field = $surfix[$typeId];
+        $fields = ['pdi_index'];
+        foreach($field as $k => $v) {
+            for($i = 1; $i <= $num; $i++) {
+                $key = $prefix.$k.$i;
+                $fields[]=$searchType=='day' ? $key : DB::raw("round(sum($key)/count($key),2) as $key");
+            }
+        }
+        $group = '';
+        switch ($searchType) {
+            case 'day':
+                $group = '';
+                $fields[]=$dateField;
+                break;
+            case 'week':
+            case 'month':
+                $group = DB::raw("date($dateField)");
+                $fields[]=DB::raw($group. ' as '.$dateField);
+                break;
+            case 'year':
+                $group = DB::raw("month($dateField)");
+                $fields[]=DB::raw($group. ' as '.$dateField);
+                break;            
+            default:
+                $group = '';
+                $fields[]=$dateField;
+                break;
+        }
+        return [$group, $fields];
+
     }
     
     /**
@@ -192,6 +223,7 @@ class MonitorController extends Controller {
     protected function getTime(Request $request) {
         $seldate = $request->input('selectDate');
         $sdate = $request->input('searchDate');
+        $sdate=['2018-09-28', '2018-09-28'];
         if($sdate) {
             $zhStart = Carbon::parse($sdate[0]);
             $zhEnd = Carbon::parse($sdate[1]);
@@ -350,15 +382,40 @@ class MonitorController extends Controller {
      * @param string $table
      * @return array
      */
-    protected function format($data, $table) {
-        $map = $this->mapFields();
-        $field = $map[$table];
+    protected function format($data, $dptId, $prefix='hd_') {
+        $surfix=config('device.surfix')[$dptId];
+        $desc = config('device.desc')[$dptId];
+        $numField = $desc['num'];
+        $unit =  config('device.units')[$dptId];
         $result = [];
+        $params = [];
         foreach ($data as $item) {
-            foreach ($field as $k => $v) {
-                $result[$item->pdi_index][$k][] = [strtotime($item->hd_datetime)*1000, $item->{$v}];
+            $num = $item->{$numField};
+            $num = $num ? $num : 10;
+            
+            for($i = 1; $i <= $num; $i++) {
+                foreach ($surfix as $k => $v) {
+                    $keyPrefix=$prefix.$k.$i;
+                    $params[$k][$k.$i][$item->rd_updatetime] = $item->$keyPrefix;
+                }             
             }
+            $result['pdi_index'] = $item->pdi_index;
+            $result['num'] = $num;
+            $result['items'] = $params;
+
         }
+        foreach ($surfix as $k => $v) {
+            $fields[] = $k;
+        }
+        $result['unit'] = $unit;
+        $result['fields'] = $fields;
+        $result['name'] = $desc['name'];
+        $result['surfix'] = $surfix;
         return $result;
+    }
+
+    protected function getDays($searchType) {
+
+
     }
 }
