@@ -27,11 +27,7 @@ class Warnnotify extends Model
     }
     
     public function getTypeValue($value) {
-        $arr = [
-            'sms'=>1,
-            'email'=>2,
-            'audio'=>4,
-        ];
+        $arr = config('device.notify_type');
 
         return array_reduce($arr, function($carry, $v)use($value){
             $cur=$value & $v ;

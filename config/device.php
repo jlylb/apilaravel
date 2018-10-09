@@ -71,6 +71,11 @@ return [
         83 => [ 'real' => '\App\RealLight', 'history' => '\App\Light' ], 
         84 => [ 'real' => '\App\RealSoil', 'history' => '\App\Soil' ], 
         82 => [ 'real' => '\App\RealLiquid', 'history' => '\App\Liquid' ], 
-    ]
+    ],
+    'notify_type' => [
+        'sms'=>1,
+        'email'=>2,
+        'audio'=>4,
+    ],
 ];
 

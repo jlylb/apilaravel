@@ -97,14 +97,14 @@ class ReportController extends Controller
                
         $query
             ->leftJoin('t_devicetype', 't_devicetype.dt_typeid', '=', 't_prideviceinfo.dpt_id')
-            ->select(['pdi_index','dpt_id', 'pdi_name', 'dt_typename']);
+            ->select(['pdi_index','dpt_id', 'pdi_name', 'dt_typename', 'dt_typememo']);
                     
         $pdi = $query->get();
         
         $result = [];   
         
         $group = $pdi->groupBy('dpt_id');
-        $pdiType = $pdi->pluck('dt_typename', 'dpt_id');
+        $pdiType = $pdi->pluck('dt_typememo', 'dpt_id');
         
         foreach ($pdiType as  $key => $val) {
             $result[]=[ 'value' => count($group[$key]), 'name' => $val, 'device' => $group[$key], 'dpt_id' => $key ];

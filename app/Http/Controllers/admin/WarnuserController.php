@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 
 use App\Warnuser;
 
+use DB;
+
 class WarnuserController extends Controller
 {
         protected $message = [
@@ -155,5 +157,58 @@ class WarnuserController extends Controller
        }else{
            return ['status' => 0, 'msg'=>'删除失败'];
        }
+    }
+    
+    /**
+     * 告警设置
+     */
+    public function warnSetting(Request $request, $uid) {
+        
+        $data = $request->input('data', []);
+        if(!$uid) {
+            return ['status' => 0, 'msg'=>'用户参数不存在'];
+        }
+        
+        $user = Warnuser::find($uid);
+        if(!$user) {
+            return ['status' => 0, 'msg'=>'用户信息不存在'];
+        }
+        
+        $pdiIndex = array_column($data, 'pdi_index');
+        
+        \App\Warnnotify::where('wu_index', '=', $uid)
+                ->whereIn('pdi_index', $pdiIndex)
+                ->delete();
+
+        $insertData = [];
+        foreach ($data as  $val) {
+            $ntype = $this->getNotifyType($val['type']);
+            if($ntype < 1) {
+                continue;
+            }
+            $insertData[] = [
+                'pdi_index' => $val['pdi_index'],
+                'wu_index' => $uid,
+                'Wn_notifytype'=> $ntype,
+            ];
+        }
+        // print_r($insertData);
+        $rs = DB::table('t_warnnotify')->insert($insertData);
+        if($rs) {
+            return ['status' => 1, 'msg'=>'保存成功'];
+        }else{
+            return ['status' => 0, 'msg'=>'保存失败'];
+        }
+    }
+    
+    private function getNotifyType($type) {
+        $result = [];
+        $ntype = config('device.notify_type');
+        foreach ($type as $k => $v) {
+            if($v){
+                $result[] = $ntype[$k];
+            }
+        }
+       return array_sum($result); 
     }
 }

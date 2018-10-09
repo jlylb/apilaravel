@@ -39,7 +39,7 @@ class DeviceinfoController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
-        $name = $request->input('pdi_code', '');
+        $name = $request->input('pdi_code', '');        
         $query = PriDeviceInfo::query();
         if(!empty($name)) {
             $query->where('pdi_code', 'like', $name.'%');
@@ -65,9 +65,29 @@ class DeviceinfoController extends Controller
             });
             $query->addSelect(['wu_index', 'Wn_notifytype']);
         }
+        $area = $request->input('area', []);
+        if(!empty($area)) {
+            $query->whereIn('AreaId', $area);
+        }
         $users = $query-> paginate($perPage);
         
-        return ['status' => 1, 'data'=>$users];
+        $query2 = PriDeviceInfo::query();
+        $query2->with([
+            'area'=>function($query){
+                $query->select(['AreaId','AreaName']);
+            },
+        ]);
+ 
+        $arealist = $query2
+                ->selectRaw('distinct(AreaId)')
+                ->get()
+                ->pluck('area')
+                ->all();
+        $areaNames = [];
+        foreach ($arealist as  $v) {
+            $areaNames[] = ['text'=>$v['AreaName'], 'value'=>$v['AreaId']];
+        }
+        return ['status' => 1, 'data'=>$users, 'areaName' => $areaNames ];
     }
 
     /**

@@ -83,6 +83,7 @@ Route::group([
     Route::get('realwarn', 'RealwarnController@index');
     Route::resource('warnnotify', 'WarnnotifyController');
     Route::resource('warnuser', 'WarnuserController');
+    Route::post('warnuser/{warnuser}/warnsetting', 'WarnuserController@warnSetting')->name('api.warnuser.warnsetting');
     
     Route::get('alarm/device', 'AlarmController@device');
     Route::get('report', 'ReportController@index')->name('api.report.historywarn');
