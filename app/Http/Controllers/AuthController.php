@@ -31,11 +31,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         // $credentials = request(['name', 'password']);
-         $post = $request->input();
-         
-         $credentials = $this->getCredentials($post);
-
-        if (! $token = $this->auth()->attempt($credentials)) {
+        $post = $request->input();
+         // dd($post);
+        $credentials = $this->getCredentials($post);
+        $token = $this->auth()->attempt($credentials);
+        if (!$token ) {
             return response()->json(['status'=>0,'msg'=>'账号或密码错误','code'=>'4001']);
         }
 

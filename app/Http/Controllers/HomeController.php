@@ -41,7 +41,7 @@ class HomeController extends Controller
 //        $ret = Bouncer::can('api.user.updateRoles');
 //        var_dump($ret);
         $ret = Bouncer::role()->where('name','=','company_admin')->first();
-        var_dump($ret->users()->where('company_id','=','9')->get()->pluck('id')->toArray());
+        // var_dump($ret->users()->where('company_id','=','9')->get()->pluck('id')->toArray());
         return view('home');
     }
 
