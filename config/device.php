@@ -77,5 +77,6 @@ return [
         'email'=>2,
         'audio'=>4,
     ],
+    'fieldLen'=>8
 ];
 

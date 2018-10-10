@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\traits;
+use Illuminate\Support\Facades\Schema;
 
 
 Trait Utils {
@@ -36,5 +37,21 @@ Trait Utils {
         }
         return $tree;
     }
+    
+    /**
+     * 获取数据表字段
+     * @param string $table
+     * @param integer $len
+     * @return array
+     */
+    protected function getColumnFromTable($table, $len=null) {
+        $columns = Schema::getColumnListing($table);
+        if($len) {
+            $columns = array_slice($columns, 0, $len);
+        }
+        return $columns;
+    }
 
 }
+
+

@@ -100,8 +100,10 @@ class AuthController extends Controller
                 }
             }
         }
-        $notification = $userModel->unreadNotifications()->count();
-        $user['notification'] = $notification;
+        // $notification = $userModel->unreadNotifications()->count();
+        // $user['notification'] = $notification;
+        $warnNum = \App\Models\Phpwarn::count();
+        $user['notification'] = $warnNum;
         return response()->json(compact('routes','user', 'ability'));
     }
 
@@ -137,6 +139,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
+            'status'=>1,
             'token' => $token,
             'token_type' => 'bearer',
             'expires_in' => $this->auth()->factory()->getTTL() * 60

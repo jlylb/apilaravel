@@ -5,9 +5,12 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
+use App\Http\traits\Utils;
 
 class DataController extends Controller
 {
+    use Utils;
+    
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
@@ -28,14 +31,17 @@ class DataController extends Controller
         if(!empty($created)) {
             $query->whereBetween('rd_updatetime', $created);
         }
+        $columns = $this -> getColumnFromTable($table);
 
         $data = $query -> paginate($perPage);
         
         $desc = $this ->getTabelFieldName($dtType);
         
-
+        $prefix = strpos($table,'realdata')!==false?'rd_':'hd_';
         
-        return [ 'status' => 1, 'data'=>$data, 'desc'=>$desc ];
+        $fieldDesc = $this->formatFields($columns, $desc, $prefix);
+        
+        return [ 'status' => 1, 'data'=>$data, 'desc'=>$fieldDesc ];
     }
     
     protected function getTabelFieldName($dtTypeid) {
@@ -44,6 +50,36 @@ class DataController extends Controller
                 ->where('dt_typeid', '=', $dtTypeid)
                 ->select(['dp_paramname', 'dp_paramdesc'])
                 ->get();
+        if($data) {
+            $data = $data -> pluck('dp_paramdesc', 'dp_paramname');
+        }
         return $data;
+    }
+    
+    /**
+     * 格式化字段描述
+     * @param array $columns
+     * @param array $desc
+     * @param string $prefix
+     * @return array
+     */
+    private function formatFields($columns, $desc, $prefix) {
+        $except = [
+            'pdi_index' => [ 'label'=>'设备索引' ],
+            'rd_updatetime' => [ 'label'=>'更新时间' ]
+        ];
+        if(!$desc) {
+            return [];
+        }
+        $arr = [];
+        foreach ($columns as $val) {
+            if(array_key_exists($val, $except)) {
+                $arr[$val] = $except[$val];
+            }else{
+                $key = str_replace($prefix, '', $val);
+                $arr[$val] = [ 'label'=>$desc[$key] ];
+            }
+        }
+        return $arr;
     }
 }

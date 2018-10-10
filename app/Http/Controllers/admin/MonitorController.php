@@ -125,7 +125,8 @@ class MonitorController extends Controller {
         if($betweenTime) {
             $query->whereBetween('rd_updatetime', $betweenTime);
         }
-        $searchType = 'day';
+        
+        $searchType = $this->getSearchType($request);
         list($group, $fields) = $this->getFields($typeId,$searchType);
         $query
             ->where('pdi_index', '=', trim($pdi))
@@ -142,6 +143,43 @@ class MonitorController extends Controller {
         $result['searchType']=$searchType;
         return [ 'status'=>1, 'devices'=>$result ];
         
+    }
+    
+    //获取查询方式
+    private function getSearchType($request) {
+        $seldate = $request->input('selectDate');
+        $sdate = $request->input('searchDate');
+        $searchType = 'hour';
+        if($seldate) {
+            switch ($seldate) {
+                case 'day':
+                    $searchType = 'hour';
+                    break;
+                case 'week':
+                case 'month':
+                    $searchType = 'day';
+                    break;
+                case 'year':
+                    $searchType = 'month';
+                    break;
+                default:
+                    break;
+            }
+            return $searchType;
+        }        
+        if($sdate) {
+            $zhStart = Carbon::parse($sdate[0]);
+            $zhEnd = Carbon::parse($sdate[1]);
+            $days = $zhEnd->diffInDays($zhStart);
+            if($days==1){
+                $searchType = 'hour';
+            }elseif($days > 1 && $days <=31) {
+                $searchType = 'day';
+            }elseif($days > 31) {
+                $searchType = 'month';
+            }
+        }
+        return $searchType;
     }
     
     /**
@@ -181,29 +219,28 @@ class MonitorController extends Controller {
      * @param int $typeId
      * @return array
      */
-    protected function getFields($typeId, $searchType='day', $num=10, $prefix='hd_', $dateField='rd_updatetime') {
+    protected function getFields($typeId, $searchType='hour', $num=10, $prefix='hd_', $dateField='rd_updatetime') {
         $surfix = config('device.surfix');
         $field = $surfix[$typeId];
         $fields = ['pdi_index'];
         foreach($field as $k => $v) {
             for($i = 1; $i <= $num; $i++) {
                 $key = $prefix.$k.$i;
-                $fields[]=$searchType=='day' ? $key : DB::raw("round(sum($key)/count($key),2) as $key");
+                $fields[]=$searchType=='hour' ? $key : DB::raw("round(sum($key)/count($key),2) as $key");
             }
         }
         $group = '';
         switch ($searchType) {
-            case 'day':
+            case 'hour':
                 $group = '';
                 $fields[]=$dateField;
                 break;
-            case 'week':
-            case 'month':
-                $group = DB::raw("date($dateField)");
+            case 'day':
+                $group = DB::raw("date_format($dateField, '%Y-%m-%d')");
                 $fields[]=DB::raw($group. ' as '.$dateField);
                 break;
-            case 'year':
-                $group = DB::raw("month($dateField)");
+            case 'month':
+                $group = DB::raw("date_format($dateField, '%Y-%m')");
                 $fields[]=DB::raw($group. ' as '.$dateField);
                 break;            
             default:
@@ -223,7 +260,7 @@ class MonitorController extends Controller {
     protected function getTime(Request $request) {
         $seldate = $request->input('selectDate');
         $sdate = $request->input('searchDate');
-        $sdate=['2018-09-28', '2018-09-28'];
+        // $sdate=['2018-09-28', '2018-09-28'];
         if($sdate) {
             $zhStart = Carbon::parse($sdate[0]);
             $zhEnd = Carbon::parse($sdate[1]);
