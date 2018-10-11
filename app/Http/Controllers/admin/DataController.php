@@ -11,6 +11,11 @@ class DataController extends Controller
 {
     use Utils;
     
+    /**
+     * 获取列表
+     * @param Request $request
+     * @return array
+     */
     public function index(Request $request)
     {
         $perPage = $request->input('pageSize',15);
@@ -44,6 +49,11 @@ class DataController extends Controller
         return [ 'status' => 1, 'data'=>$data, 'desc'=>$fieldDesc ];
     }
     
+    /**
+     * 获取字段定义
+     * @param integer $dtTypeid
+     * @return array
+     */
     protected function getTabelFieldName($dtTypeid) {
         $table = 't_deviceparam';
         $data = DB::table($table)
@@ -51,7 +61,7 @@ class DataController extends Controller
                 ->select(['dp_paramname', 'dp_paramdesc'])
                 ->get();
         if($data) {
-            $data = $data -> pluck('dp_paramdesc', 'dp_paramname');
+            $data = array_column($data, 'dp_paramdesc', 'dp_paramname');
         }
         return $data;
     }
@@ -66,10 +76,12 @@ class DataController extends Controller
     private function formatFields($columns, $desc, $prefix) {
         $except = [
             'pdi_index' => [ 'label'=>'设备索引' ],
-            'rd_updatetime' => [ 'label'=>'更新时间' ]
+            'hd_index' => [ 'label'=>'索引' ],
+            'rd_updatetime' => [ 'label'=>'更新时间' ],
+            'hd_datetime' => [ 'label'=>'创建时间' ],
         ];
         if(!$desc) {
-            return [];
+            return null;
         }
         $arr = [];
         foreach ($columns as $val) {
@@ -77,7 +89,9 @@ class DataController extends Controller
                 $arr[$val] = $except[$val];
             }else{
                 $key = str_replace($prefix, '', $val);
-                $arr[$val] = [ 'label'=>$desc[$key] ];
+                if($desc[$key]){
+                    $arr[$val] = [ 'label'=>$desc[$key] ];
+                }  
             }
         }
         return $arr;

@@ -40,7 +40,8 @@ Route::group([
        , 'permission:api'
        , 'scope'
     ]
-], function () {
+], function() {
+    
     Route::resource('users', 'UserController');
     Route::get('user/roles/{user}', 'UserController@getRoles')->name('api.user.getRoles');
     Route::put('user/roles', 'UserController@updateRoles')->name('api.user.updateRoles');
@@ -61,32 +62,31 @@ Route::group([
     Route::resource('devicetype', 'DevicetypeController');
     Route::resource('deviceinfo', 'DeviceinfoController');
     
-    Route::get('deviceinfo/devicetype/all', 'DeviceinfoController@getDeviceType');
-    Route::get('deviceinfo/{company}/area', 'DeviceinfoController@getCompanyArea');
+    Route::get('deviceinfo/devicetype/all', 'DeviceinfoController@getDeviceType')->name('api.deviceinfo.devicetype');
+    Route::get('deviceinfo/{company}/area', 'DeviceinfoController@getCompanyArea')->name('api.deviceinfo.area');
     
     Route::resource('area', 'AreaController');
     
     Route::resource('data', 'DataController@index');
     
-    Route::get('monitor/index', 'MonitorController@index');
-    Route::get('monitor/device', 'MonitorController@device');
-    Route::post('monitor/data', 'MonitorController@deviceData');
-    Route::post('monitor/realdata', 'MonitorController@deviceRealData');
+    Route::get('monitor/index', 'MonitorController@index')->name('api.monitor.index');
+    Route::post('monitor/data', 'MonitorController@deviceData')->name('api.monitor.data');
+    Route::post('monitor/realdata', 'MonitorController@deviceRealData')->name('api.monitor.realdata');
     
-    Route::get('userlog', 'UserLogController@index');
-    Route::post('control/{pdi}/update', 'ControlController@update');
-    Route::get('control/device', 'ControlController@device');
-    Route::get('control/devicedata', 'ControlController@deviceData');
+    Route::get('userlog', 'UserLogController@index')->name('api.userlog.index');
+    Route::post('control/{pdi}/update', 'ControlController@update')->name('api.control.update');
+    Route::get('control/device', 'ControlController@device')->name('api.control.device');
+    Route::get('control/devicedata', 'ControlController@deviceData')->name('api.control.devicedata');
+    
     Route::resource('warnclass', 'WarnclassController');
     Route::resource('warndefine', 'WarndefineController');
     
-    Route::get('realwarn', 'RealwarnController@index');
+    Route::get('realwarn', 'RealwarnController@index')->name('api.realwarn.index');
     Route::resource('warnnotify', 'WarnnotifyController');
     Route::resource('warnuser', 'WarnuserController');
     Route::post('warnuser/{warnuser}/warnsetting', 'WarnuserController@warnSetting')->name('api.warnuser.warnsetting');
     
-    Route::get('alarm/device', 'AlarmController@device');
-    Route::get('report', 'ReportController@index')->name('api.report.historywarn');
+    Route::get('report', 'ReportController@index')->name('api.report.index');
     Route::get('report/historysum', 'ReportController@historysum')->name('api.report.historysum');
     Route::get('report/assetsum', 'ReportController@assetsum')->name('api.report.assetsum');
     Route::get('video', 'VideoController@index')->name('api.video.index');

@@ -10,7 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 Route::get('/', 'HomeController@welcome')->name('welcome');

@@ -3,128 +3,128 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
-
 use App\Models\Historywarn;
 use App\PriDeviceInfo;
-
 use DB;
-
 use Carbon\Carbon;
 
-class ReportController extends Controller
-{
+class ReportController extends Controller {
+
     protected $message = [
-            
+        
     ];
+
     /**
-     * Display a listing of the resource.
+     * 历史告警统计
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
-    public function index(Request $request)
-    {
-        $perPage = $request->input('pageSize',15);
+    public function index(Request $request) {
         
+        $perPage = $request->input('pageSize', 15);
+
         $query = Historywarn::query();
-        
-        
+
+
         $pdiIndex = $request->input('pdi_index', '');
-        
-        if(!empty($pdiIndex)) {
+
+        if (!empty($pdiIndex)) {
             $query->where('pdi_index', '=', trim($pdiIndex));
         }
-        
+
         $wdIndex = $request->input('wd_index', '');
-        if(!empty($wdIndex)) {
+        if (!empty($wdIndex)) {
             $query->where('wd_index', '=', trim($wdIndex));
         }
-        
+
         $createdAt = $request->input('rs_updatetime', '');
-        if(!empty($createdAt)) {
+        if (!empty($createdAt)) {
             $query->whereBetween('rs_updatetime', $createdAt);
         }
         $lvl = $request->input('lvl', '');
-        if(!empty($lvl)) {
+        if (!empty($lvl)) {
             $query->where('wd_level0', '=', trim($lvl));
         }
         $query
             ->leftJoin('t_warn_define', 't_warn_define.wd_index', '=', 't_historywarn.wd_index')
             ->select(['t_historywarn.*', 'wd_level0']);
-            
-// echo $query->toSql();
-        $warns = $query-> paginate($perPage);
-        
-        return ['status' => 1, 'data'=>$warns];
+
+        $warns = $query->paginate($perPage);
+
+        return ['status' => 1, 'data' => $warns];
     }
     
-    public function historysum(Request $request)
-    {
-        
+    /**
+     * 历史统计
+     * @param Request $request
+     * @return array
+     */
+    public function historysum(Request $request) {
+
         $query = Historywarn::query();
-        
+
         $pdiIndex = $request->input('pdi_index', '');
-        
-        if(!empty($pdiIndex)) {
+
+        if (!empty($pdiIndex)) {
             $query->where('pdi_index', '=', trim($pdiIndex));
         }
-        
-        
+
+
         $createdAt = $request->input('rs_updatetime', '');
-        $dates = $this->getTime($createdAt,['6 months ago', 'today']);
-//
-        if(!empty($dates)) {
+        $dates = $this->getTime($createdAt, ['6 months ago', 'today']);
+
+        if (!empty($dates)) {
             $query->whereBetween('rs_updatetime', $dates);
         }
-        
+
         $query
             ->groupBy(['pdi_index', 'wd_level0'])
             ->leftJoin('t_warn_define', 't_warn_define.wd_index', '=', 't_historywarn.wd_index')
-            ->select(['pdi_index','t_historywarn.wd_index', 'pdi_name as name', 'wd_level0', DB::raw('count(t_historywarn.wd_index) as value')]);
-        
+            ->select(['pdi_index', 't_historywarn.wd_index', 'pdi_name as name', 'wd_level0', DB::raw('count(t_historywarn.wd_index) as value')]);
 
-            
+
+
         $warns = $query->get();
-        
-        return [ 'status' => 1, 'data'=>$warns, 'rs_updatetime' => $dates ];
+
+        return ['status' => 1, 'data' => $warns, 'rs_updatetime' => $dates];
     }
     
-    public function assetsum(Request $request)
-    {
-        
+    /**
+     * 资产统计
+     * @param Request $request
+     * @return array
+     */
+    public function assetsum(Request $request) {
+
         $query = PriDeviceInfo::query();
-               
+
         $query
             ->leftJoin('t_devicetype', 't_devicetype.dt_typeid', '=', 't_prideviceinfo.dpt_id')
-            ->select(['pdi_index','dpt_id', 'pdi_name', 'dt_typename', 'dt_typememo']);
-                    
+            ->select(['pdi_index', 'dpt_id', 'pdi_name', 'dt_typename', 'dt_typememo']);
+
         $pdi = $query->get();
-        
-        $result = [];   
-        
+
+        $result = [];
+
         $group = $pdi->groupBy('dpt_id');
         $pdiType = $pdi->pluck('dt_typememo', 'dpt_id');
-        
-        foreach ($pdiType as  $key => $val) {
-            $result[]=[ 'value' => count($group[$key]), 'name' => $val, 'device' => $group[$key], 'dpt_id' => $key ];
+
+        foreach ($pdiType as $key => $val) {
+            $result[] = ['value' => count($group[$key]), 'name' => $val, 'device' => $group[$key], 'dpt_id' => $key];
         }
-        
-        return [ 'status' => 1, 'data' => $result, 'total'=>$pdi->count() ];
+
+        return ['status' => 1, 'data' => $result, 'total' => $pdi->count()];
     }
-    
-    public function getWarnLevel() {
-        
-    }
+
 
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
+    public function create() {
+        
     }
 
     /**
@@ -133,9 +133,8 @@ class ReportController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-
+    public function store(Request $request) {
+        
     }
 
     /**
@@ -144,9 +143,8 @@ class ReportController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-
+    public function show($id) {
+        
     }
 
     /**
@@ -155,8 +153,7 @@ class ReportController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
+    public function edit($id) {
         //
     }
 
@@ -167,35 +164,41 @@ class ReportController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-
+    public function update(Request $request, $id) {
+        
     }
-    
+
     protected function validateData($request) {
-
+        
     }
+
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-
+    public function destroy($id) {
+        
     }
     
-    protected function getTime($dates, $defaults=['7 days ago', 'today']) {
-        
-        if(!$dates) {
+    /**
+     * 获取时间
+     * @param type $dates
+     * @param type $defaults
+     * @return array
+     */
+    protected function getTime($dates, $defaults = ['7 days ago', 'today']) {
+
+        if (!$dates) {
             $dates = $defaults;
         }
-        
+
         list($startDay, $endDay) = $dates;
-        
+
         $zhStart = Carbon::parse($startDay)->startOfDay()->toDateTimeString();
         $zhEnd = Carbon::parse($endDay)->endOfDay()->toDateTimeString();
         return [$zhStart, $zhEnd];
     }
+
 }

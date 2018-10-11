@@ -10,25 +10,28 @@ class Menu extends Model
     protected $fillable = [
         'route_path', 'route_name', 'component', 'redirect', 'meta', 'pid', 'path', 'hidden','name','always_show'
     ];
-    
-    public function setMetaAttribute($value) {
-        $this->attributes['meta'] = json_encode($value,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-    }
-    
-    public function setButtonsAttribute($value) {
-        $arr = [];
-        foreach ($value as  $val) {
-            if(!empty($val['label'])&&!empty($val['value'])){
-                $arr[$val['label']] = $val['value'];
-            }
-        }
-        if($arr){
-            $result = json_encode($arr,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-        }else{
-            $result = null;
-        }
-        $this->attributes['buttons'] = $result;
-    }
+    protected $casts = [
+        'buttons' => 'array',
+        'meta' => 'array',
+    ];
+//    public function setMetaAttribute($value) {
+//        $this->attributes['meta'] = json_encode($value,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+//    }
+//    
+//    public function setButtonsAttribute($value) {
+//        $arr = [];
+//        foreach ($value as  $val) {
+//            if(!empty($val['label'])&&!empty($val['value'])){
+//                $arr[$val['label']] = $val['value'];
+//            }
+//        }
+//        if($arr){
+//            $result = json_encode($arr,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+//        }else{
+//            $result = null;
+//        }
+//        $this->attributes['buttons'] = $result;
+//    }
     
 //    public function getMetaAttribute($value) {
 //         return json_decode($value);

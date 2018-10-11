@@ -68,12 +68,10 @@ class AuthController extends Controller
             $query->whereIn('route_name', $ability)->orWhere('route_name', '=', '*');
         }
         $lists = $query
-                ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden', 'buttons','always_show'])
+                ->select(['route_name as name','route_path as path','component','redirect','meta', 'pid', 'id','hidden', 'buttons','always_show', 'name as menu_name'])
                 ->get()
                 ->toArray();
-        //$routes = [];
         foreach($lists as &$item) {
-            $item['meta']= json_decode($item['meta']);
             if($item['name']=='*') {
                 unset($item['name']);
             }
