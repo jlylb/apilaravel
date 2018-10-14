@@ -64,14 +64,53 @@ class MonitorController extends Controller {
                 ->toArray();
         $deviceType = [];
         $device = [];
+        $typeIcons = config('device.monitor');
         foreach ($devices as $v) {
             $deviceType[$v['AreaId']][$v['dpt_id']] = ['value' => $v['dpt_id'], 'label' => $v['types']['dt_typememo']];
-            $device[$v['AreaId']][$v['dpt_id']][] = ['value' => $v['pdi_index'], 'label' => $v['pdi_name']];
+            $device[$v['AreaId']][$v['dpt_id']][] = [
+                'value' => $v['pdi_index'], 
+                'label' => $v['pdi_name'], 
+                'icon' => $typeIcons[$v['dpt_id']],
+                'areaId' => $v['AreaId'],
+            ];
         }
         foreach ($deviceType as $k => $v) {
             $deviceType[$k] = array_values($v);
         }
         return compact('deviceType', 'device');
+    }
+
+    /**
+     * 获取一个区域的所有设备
+     */
+    public function getDevicesByArea(Request $request) {
+        $deviceItem = null;
+
+        $areaId = $request->input('areaId');
+        if(!$areaId) {
+            return $deviceItem;
+        }
+
+        $deviceTypeIds = config('device.monitor');
+
+        $devices = PriDeviceInfo::whereIn('dpt_id', array_keys($deviceTypeIds))
+                ->where('AreaId', '=', $areaId)
+                ->select(['AreaId', 'dpt_id', 'pdi_name', 'pdi_index'])
+                ->get()
+                ->toArray();
+
+        
+        foreach ($devices as  $v) {
+            $deviceItem[] = [
+                'value' => $v['pdi_index'], 
+                'label' => $v['pdi_name'], 
+                'icon' => $deviceTypeIds[$v['dpt_id']],
+                'areaId' => $v['AreaId'],
+                'device_type' => $v['dpt_id'],
+            ];
+        }
+
+        return ['status' => 1, 'devices' => $deviceItem];
     }
 
     /**
@@ -183,6 +222,7 @@ class MonitorController extends Controller {
         if ($device) {
             $result = $this->formatReal($device, $typeId);
         }
+        $areaId = $request->input('areaId');
 
         return ['status' => 1, 'devices' => $result];
     }

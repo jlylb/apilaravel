@@ -72,7 +72,8 @@ Route::group([
     Route::get('monitor/index', 'MonitorController@index')->name('api.monitor.index');
     Route::post('monitor/data', 'MonitorController@deviceData')->name('api.monitor.data');
     Route::post('monitor/realdata', 'MonitorController@deviceRealData')->name('api.monitor.realdata');
-    
+    Route::post('monitor/areadevice', 'MonitorController@getDevicesByArea')->name('api.monitor.areadevice');
+
     Route::get('userlog', 'UserLogController@index')->name('api.userlog.index');
     Route::post('control/{pdi}/update', 'ControlController@update')->name('api.control.update');
     Route::get('control/device', 'ControlController@device')->name('api.control.device');
