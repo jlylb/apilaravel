@@ -102,7 +102,8 @@ class AuthController extends Controller
         // $user['notification'] = $notification;
         $warnNum = \App\Models\Phpwarn::count();
         $user['notification'] = $warnNum;
-        return response()->json(compact('routes','user', 'ability'));
+        $status = 1;
+        return response()->json(compact('routes','user', 'ability', 'status'));
     }
 
     /**

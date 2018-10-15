@@ -4,18 +4,26 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UserController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/web.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DeviceinfoController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/traits/Utils.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Menu.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DataController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/api.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MonitorController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/PriDeviceInfo.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/WarnnotifyController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/AuthController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/ability.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/WarnuserController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/HomeController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Models/Scope/CompanyScope.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/device.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/ReportController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Middleware/CheckPermissiion.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/RealwarnController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Warnnotify.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/AlarmController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MenuController.php</file>
         </group>
     </open-files>
 </project-private>

@@ -89,7 +89,7 @@ class DataController extends Controller
                 $arr[$val] = $except[$val];
             }else{
                 $key = str_replace($prefix, '', $val);
-                if($desc[$key]){
+                if(isset($desc[$key])){
                     $arr[$val] = [ 'label'=>$desc[$key] ];
                 }  
             }
