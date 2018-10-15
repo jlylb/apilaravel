@@ -4,11 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RealLiquid extends Model
+class RealSoilPh extends Model
 {
-    use \App\Models\device;
-    
-    protected $table = 't_realdata_LevelValue';
+    protected $table = 't_realdata_SoilPH';
     
     protected $primaryKey = 'pdi_index';
     

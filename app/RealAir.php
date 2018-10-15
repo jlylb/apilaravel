@@ -8,7 +8,7 @@ class RealAir extends Model
 {
     use \App\Models\device;
     
-    protected $table = 't_realdata_envtemphumi';
+    protected $table = 't_realdata_EnvTempHumi';
     
     protected $primaryKey = 'pdi_index';
     

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Soil extends Model
 {
-    protected $table = 't_hisdata_soilcondth';
+    protected $table = 't_hisdata_SoilCondTH';
     
     protected $primaryKey = 'hd_index';
     

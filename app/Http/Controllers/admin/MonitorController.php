@@ -137,7 +137,7 @@ class MonitorController extends Controller {
         $query = $model::query();
 
         if ($betweenTime) {
-            $query->whereBetween('rd_updatetime', $betweenTime);
+            $query->whereBetween('hd_datetime', $betweenTime);
         }
 
         $searchType = $this->getSearchType($request);

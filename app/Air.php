@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Air extends Model
 {
-    protected $table = 't_hisdata_envtemphumi';
+    protected $table = 't_hisdata_EnvTempHumi';
     
     protected $primaryKey = 'hd_index';
     

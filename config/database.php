@@ -65,7 +65,19 @@ return [
             'strict' => false,
             'engine' => null,
         ],
-        
+        'test' => [
+            'driver' => 'mysql',
+            'host' => '192.168.1.188',
+            'port' =>  '3306',
+            'database' => 'IPCenter',
+            'username' => 'root',
+            'password' => 'root',
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', 'localhost'),

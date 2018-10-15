@@ -43,6 +43,6 @@ class RealwarnController extends Controller
 //        ]);
         $warns = $query-> paginate($perPage);
         
-        return ['status' => 1, 'data'=>$warns];
+        return ['status' => 1, 'data'=>$warns, 'icons'=>config('device.monitor'), 'wlevel'=>config('device.warn_level')];
     }
 }

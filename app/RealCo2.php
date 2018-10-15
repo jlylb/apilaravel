@@ -8,7 +8,7 @@ class RealCo2 extends Model
 {
     use \App\Models\device;
     
-    protected $table = 't_realdata_co2concentration';
+    protected $table = 't_realdata_CO2Concentration';
     
     protected $primaryKey = 'pdi_index';
     
