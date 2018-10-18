@@ -91,6 +91,10 @@ Route::group([
     Route::get('report/historysum', 'ReportController@historysum')->name('api.report.historysum');
     Route::get('report/assetsum', 'ReportController@assetsum')->name('api.report.assetsum');
     Route::get('video', 'VideoController@index')->name('api.video.index');
+    
+    Route::get('donghuang/index', 'DonghuangController@index')->name('api.donghuang.index');
+    Route::post('donghuang/device', 'DonghuangController@device')->name('api.donghuang.device');
+    Route::post('donghuang/realdata', 'DonghuangController@realData')->name('api.donghuang.realdata');
 });
 
 //$api = app('Dingo\Api\Routing\Router');

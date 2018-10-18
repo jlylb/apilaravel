@@ -46,7 +46,8 @@ class MonitorController extends Controller {
             'province' => $province, 
             'city' => $city, 
             'deviceType' => $info['deviceType'], 
-            'device' => $info['device']
+            'device' => $info['device'],
+            'areaDevice' => $info['areaDevice']
         ];
     }
 
@@ -65,6 +66,7 @@ class MonitorController extends Controller {
         $deviceType = [];
         $device = [];
         $typeIcons = config('device.monitor');
+        $areaDevice = [];
         foreach ($devices as $v) {
             $deviceType[$v['AreaId']][$v['dpt_id']] = ['value' => $v['dpt_id'], 'label' => $v['types']['dt_typememo']];
             $device[$v['AreaId']][$v['dpt_id']][] = [
@@ -72,12 +74,20 @@ class MonitorController extends Controller {
                 'label' => $v['pdi_name'], 
                 'icon' => $typeIcons[$v['dpt_id']],
                 'areaId' => $v['AreaId'],
+                'device_type' => $v['dpt_id'],
+            ];
+            $areaDevice[$v['AreaId']][] = [
+                'value' => $v['pdi_index'], 
+                'label' => $v['pdi_name'], 
+                'icon' => $typeIcons[$v['dpt_id']],
+                'areaId' => $v['AreaId'],
+                'device_type' => $v['dpt_id'],
             ];
         }
         foreach ($deviceType as $k => $v) {
             $deviceType[$k] = array_values($v);
         }
-        return compact('deviceType', 'device');
+        return compact('deviceType', 'device', 'areaDevice');
     }
 
     /**
@@ -121,6 +131,7 @@ class MonitorController extends Controller {
     public function deviceData(Request $request) {
         $pdi = $request->input('device');
         $typeId = $request->input('device_type');
+        $fmt = $request->input('fmt', 'pc');
 
         if (!$pdi || !$typeId) {
             return ['status' => 1, 'devices' => []];
@@ -152,7 +163,8 @@ class MonitorController extends Controller {
         $device = $query->get();
         $result = [];
         if ($device) {
-            $result = $this->format($device, $typeId);
+            $method = $fmt=='mobile'?'formatMobile':'format';
+            $result = $this->$method($device, $typeId);
         }
         $result['searchType'] = $searchType;
         return ['status' => 1, 'devices' => $result];
@@ -391,6 +403,47 @@ class MonitorController extends Controller {
             $result['num'] = $num;
             $result['items'] = $params;
         }
+        foreach ($surfix as $k => $v) {
+            $fields[] = $k;
+        }
+        $result['unit'] = $unit;
+        $result['fields'] = $fields;
+        $result['name'] = $desc['name'];
+        $result['surfix'] = $surfix;
+        return $result;
+    }
+    
+    /**
+     * 格式化历史数据手机格式
+     * @param array $data
+     * @param string $table
+     * @return array
+     */
+    protected function formatMobile($data, $dptId, $prefix = 'hd_') {
+        $surfix = config('device.surfix')[$dptId];
+        $desc = config('device.desc')[$dptId];
+        $numField = $desc['num'];
+        $unit = config('device.units')[$dptId];
+        $result = [];
+        $params = [];
+        foreach ($data as $item) {
+            $num = $item->{$numField};
+            $num = $num ? $num : 10;
+            $curParam = [];
+            for ($i = 1; $i <= $num; $i++) {
+                $temp = [];
+                foreach ($surfix as $k => $v) {
+                    $keyPrefix = $prefix . $k . $i;
+                    $temp[$k] = $item->$keyPrefix;
+                }
+                $temp['date'] = $item->rd_updatetime;
+                $params[$i][] = $temp;
+            }
+            //$params[] = $curParam;
+            $result['pdi_index'] = $item->pdi_index;
+            $result['num'] = $num;          
+        }
+         $result['items'] = $params;
         foreach ($surfix as $k => $v) {
             $fields[] = $k;
         }
