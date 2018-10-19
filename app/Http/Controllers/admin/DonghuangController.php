@@ -93,6 +93,70 @@ class DonghuangController extends Controller
         $table = array_get($tables, $curType.'.realtable');
         
         $devices = DB::table($table)->where('pdi_index', '=', trim($pdi))->first();
+        if($curType==33){
+            $devices = $this->formatReal([$devices], $curType);
+        }
         return [ 'status' => 1, 'devices' => $devices ];
+    }
+    
+        /**
+     * 格式化实时数据
+     * @param array $data
+     * @param string $table
+     * @return array
+     */
+    protected function formatReal($data, $dptId, $prefix = 'rd_') {
+        $surfix = config('device.surfix')[$dptId];
+        $consta = config('device.consta')[$dptId];
+        $desc = config('device.desc')[$dptId];
+        $numField = $desc['num'];
+        $unit = config('device.units')[$dptId];
+        $result = [];
+        foreach ($data as $item) {
+            $num = $item->{$numField};
+            $num = $num ? $num : 8;
+            $params = [];
+            for ($i = 1; $i <= $num; $i++) {
+                $param = [];
+                foreach ($surfix as $k => $v) {
+                    $keyPrefix = $prefix . $k . $i;
+                    $keyHwarn = $keyPrefix . 'hwarn';
+                    $keyLwarn = $keyPrefix . 'lwarn';
+                    $keyPrefix = $prefix . $k . $i;
+                    $param[$k] = [
+                        $k . '_name' => $v,
+                        $k . '_value' => $item->$keyPrefix,
+                        'hwarn_name' => $v . $i . '上限状态',
+                        'hwarn_value' => $item->$keyHwarn,
+                        'lwarn_name' => $v . $i . '下限状态',
+                        'lwarn_value' => $item->$keyLwarn,
+                    ];
+                }
+                list($constaField, $constaName) = $consta;
+                $constaKey = $prefix . $constaField . $i . 'consta';
+                $param['consta'] = array_merge([], [
+                    'consta_name' => $constaName,
+                    'consta_value' => $item->{$constaKey},
+                ]);
+                $params[] = $param;
+            }
+            $result['rd_updatetime'] = $item->rd_updatetime;
+            $result['rd_NetCom'] = $item->rd_NetCom;
+            $result['pdi_index'] = $item->pdi_index;
+            $result['num'] = $num;
+
+            foreach ($surfix as $k => $v) {
+                $fields[] = $k;
+            }
+            // $fields[] = 'consta';
+            $result['fields'] = $fields;
+            $result['name'] = $desc['name'];
+            // $item['params'] = $params;
+            $result['items'] = $params;
+            $result['unit'] = $unit;
+
+            $result['icons'] = config('device.icons');
+        }
+        return $result;
     }
 }

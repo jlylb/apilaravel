@@ -40,6 +40,7 @@ return [
         84 => [ 'Soiltemp' => '温度', 'Soilhumi' => '湿度', 'SoilCond'=>' 电导率'], 
         82 => [ 'LevelValue' => '液位' ],
         85 => [ 'SoilPH' => '酸碱度' ],
+        33 => [  'envitemp' => '温度', 'envihumi' => '湿度', ],
     ],
     'itemField' => [
         'hwarn'=>'上限状态', 'lwarn'=>'下限状态',
@@ -51,6 +52,7 @@ return [
         84 => [ 'envihumi' , '连接状态' ], 
         82 => [ 'LevelValue' , '连接状态' ],
         85 => [ 'SoilPH' , '连接状态' ], 
+        33 => [ 'envihumi' , '连接状态'  ],
     ],
     'desc' => [ 
         80 =>[ 'num' => 'rd_envihumi_num', 'name' => '环境温湿度' ], 
@@ -59,6 +61,7 @@ return [
         84 =>[ 'num' => 'rd_SoilTH_num', 'name' => '土壤温湿度' ], 
         82 =>[ 'num' => 'rd_LevelValue_num', 'name' => '液位' ],
         85 =>[ 'num' => 'rd_SoilPH_num', 'name' => '土壤酸碱度' ],
+        33 =>[ 'num' => 'rd_envihumi_num', 'name' => '环境温湿度' ],
     ],
     'units' => [ 
         80 => [  'envitemp' => '°C', 'envihumi' => '%RH', ], 
@@ -67,6 +70,7 @@ return [
         84 => [ 'Soiltemp' => '°C', 'Soilhumi' => '%RH','SoilCond' => 'us/cm',], 
         82 => [ 'LevelValue' => 'M' ], 
         85 => [ 'SoilPH' => 'PH' ],
+        33 => [  'envitemp' => '°C', 'envihumi' => '%RH', ],
     ],
     'icons'=>[
         'envitemp' => 'wendu-item-circle', 
