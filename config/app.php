@@ -160,7 +160,7 @@ return [
         
         Barryvdh\Debugbar\ServiceProvider::class,
 
-        // Dingo\Api\Provider\LaravelServiceProvider::class,
+        Dingo\Api\Provider\LaravelServiceProvider::class,
 
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         
@@ -219,6 +219,7 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
         'Api' => Dingo\Api\Facade\API::class,
+        'ApiRoute'=>Dingo\Api\Facade\Route::class,
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory'=> Tymon\JWTAuth\Facades\JWTFactory::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
