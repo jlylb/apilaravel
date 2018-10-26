@@ -43,6 +43,9 @@ class ScopeBouncer
         
         $tenantId = null;
         if($user && !$user->isA('superadmin')){
+            if(!$user->Co_ID) {
+                return response()->json(['msg' => '该用户没有分配公司, 请联系管理员'], 422);
+            }
             $tenantId = $user->Co_ID;
         }
         

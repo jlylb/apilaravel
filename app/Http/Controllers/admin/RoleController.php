@@ -39,7 +39,6 @@ class RoleController extends Controller
         }
         $user = $this->user();
         if(!$this->isSuper($user)){
-            //$ownRoles = $user->roles()->get()->pluck('id')->toArray();
             $query->where('scope', $user->Co_ID);
         }
         $roles = $query->paginate($perPage);
@@ -150,7 +149,7 @@ class RoleController extends Controller
         
         $roleAbility = $this->formatAbility($this->roleAbility($role));
 
-        return ['status' => 1, 'data'=>compact('all', 'roleAbility')];
+        return ['status' => 1, 'data'=>compact('all', 'roleAbility'),'desc'=>config('ability')];
     }
 
     protected function formatAbility($data) 

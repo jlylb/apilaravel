@@ -38,7 +38,7 @@ class AuthController extends Controller
         if (!$token ) {
             return response()->json(['status'=>0,'msg'=>'账号或密码错误','code'=>'4001']);
         }
-
+        
         return $this->respondWithToken($token);
     }
     

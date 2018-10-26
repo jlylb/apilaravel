@@ -79,7 +79,7 @@ Route::group([
     Route::get('control/device', 'ControlController@device')->name('api.control.device');
     Route::get('control/devicedata', 'ControlController@deviceData')->name('api.control.devicedata');
     
-    Route::resource('warnclass', 'WarnclassController');
+//    Route::resource('warnclass', 'WarnclassController');
     Route::resource('warndefine', 'WarndefineController');
     
     Route::get('realwarn', 'RealwarnController@index')->name('api.realwarn.index');
@@ -96,7 +96,7 @@ Route::group([
     Route::post('donghuang/device', 'DonghuangController@device')->name('api.donghuang.device');
     Route::post('donghuang/realdata', 'DonghuangController@realData')->name('api.donghuang.realdata');
     Route::post('donghuang/storedevice', 'DonghuangController@storeDevice')->name('api.donghuang.storeDevice');
-    Route::post('donghuang/store', 'DonghuangController@store')->name('api.donghuang.store');
+//    Route::post('donghuang/store', 'DonghuangController@store')->name('api.donghuang.store');
 });
 
 //$api = app('Dingo\Api\Routing\Router');
