@@ -14,7 +14,7 @@ class SyUser extends Authenticatable implements JWTSubject {
 
     protected $table = 'sy_user';
     protected $primaryKey = 'userid';
-    protected $fillable = ['userpwd', 'username', 'Co_ID'];
+    protected $fillable = ['userpwd', 'username', 'Co_ID', 'avatar'];
     protected $hidden = [
         'userpwd', 'remember_token',
     ];

@@ -20,7 +20,7 @@ class DonghuangController extends Controller
             return ['status'=>0, 'msg'=>'设备类型不存在'];
         }
         $types = $config[$curType];
-        $typeIds = array_column($types, 'value');
+        $typeIds = array_column($types, 'rvalue');
         $devices = PriDeviceInfo::whereIn('dpt_id', $typeIds)
                 ->select(['dpt_id', 'pdi_index'])
                 ->get();
@@ -28,9 +28,13 @@ class DonghuangController extends Controller
         if($devices->count()) {
             $temp = $devices->groupBy('dpt_id');
         }
-        
+        $sub = config('dh.subMap');
         foreach ($types as  $k => $val) {
-            $types[$k]['num'] = isset($temp[$k]) ? count($temp[$k]) : 0;
+            if(!$temp){
+                $types[$k]['num'] = 0;
+            }else{
+               $types[$k]['num'] = isset($temp[$k]) ? count($temp[$k]) : (isset($temp[$sub[$k]]) ? count($temp[$sub[$k]]) : 0 );
+            }
         }
         return ['status'=>1, 'devices'=> array_values($types), 'name'=> array_get(config('dh.names'),$curType)];
     }
@@ -39,12 +43,20 @@ class DonghuangController extends Controller
      * 获取设备数据
      */
     protected function getDevices($typeId = []) {
+        if(!$typeId) {
+            return [];
+        }
         $query = PriDeviceInfo::query();
         if($typeId) {
             $query->whereIn('dpt_id', $typeId);
         }
         $devices = $query
                 ->select(['AreaId', 'dpt_id', 'pdi_name', 'pdi_index'])
+                ->with([
+                    'types'=>function($query){
+                        $query->select(['dt_typeid','haschildType']);
+                    },
+                ])
                 ->get()
                 ->toArray();
 
@@ -52,14 +64,20 @@ class DonghuangController extends Controller
         
         $desc = config('dh.desc');
         
+        $map = config('dh.subMap');
+        
         foreach ($devices as  $v) {
+            $typeId = $v['dpt_id'];
+            if(in_array($typeId, $map)) {
+                $typeId = $typeId.$v['types']['haschildType'];
+            }
             $deviceItem[] = [
                 'value' => $v['pdi_index'], 
                 'label' => $v['pdi_name'], 
-                'icon' => array_get($desc, $v['dpt_id'].'.icon'),
+                'icon' => array_get($desc, $typeId.'.icon'),
                 'areaId' => $v['AreaId'],
-                'type' => $v['dpt_id'],
-                'router' => array_get($desc, $v['dpt_id'].'.router')
+                'type' => $typeId,
+                'router' => array_get($desc, $typeId.'.router')
             ];
         }
 
@@ -72,8 +90,12 @@ class DonghuangController extends Controller
      * @param Request $request
      */
     public function device(Request $request) {
-        $type = (array)$request -> input('type', []);
-        $devices = $this ->getDevices($type);
+        $type = $request -> input('type', []);
+        $map = config('dh.subMap');
+        if(array_key_exists($type, $map)) {
+            $type =  $map[$type];
+        }
+        $devices = $this ->getDevices((array)$type);
         return [ 'status' => 1, 'devices' => $devices ];
     }
     /**
@@ -81,22 +103,49 @@ class DonghuangController extends Controller
      */
     public function realData(Request $request) {
         $pdi = $request->input('pdi',0);
+        $reqType = $request->input('type','');
         $info = PriDeviceInfo::find($pdi);
         if(!$info) {
-            return ['status'=>0, 'msg'=>'设备类型不存在'];
+            return ['status'=>0, 'msg'=>'设备数据不存在'];
         }  
         $tables = config('dh.desc');
         $curType = $info->dpt_id;
-        if(!$curType || !array_has($tables, $curType)) {
+        if(!$curType) {
             return ['status'=>0, 'msg'=>'设备类型不存在'];
         }
-        $table = array_get($tables, $curType.'.realtable');
+        $table = array_get($tables, ($reqType?$reqType:$curType).'.realtable');
         
         $devices = DB::table($table)->where('pdi_index', '=', trim($pdi))->first();
         if($curType==33){
-            $devices = $this->formatReal([$devices], $curType);
+            $devices = $this->formatReal($devices, $curType);
         }
-        return [ 'status' => 1, 'devices' => $devices ];
+        $subField = [];
+        if($curType==34 && $devices) {
+            $childType = substr($reqType, strlen($curType));
+            $sub = $this->getSwitch($curType, $childType, $pdi);
+            $sub = array_column($sub, 'tu_SubCha');
+            $prefix = 'rd_switch';
+            $txtFix = '环境开关量';
+            foreach ($sub as $v) {
+               $field = $prefix.$v;
+               $subField[] = [ 'label'=>$txtFix.$v, 'value'=>!!$devices->$field ];
+            }
+        }
+        return [ 'status' => 1, 'devices' => $devices, 'subFields' => $subField ];
+    }
+    
+    /**
+     * 获取开关量
+     * @param int $type 主类型
+     * @param int $childType 子类型
+     */
+    protected function getSwitch($type, $childType, $pdi) {
+        $table = 't_UserDeSubDev';
+        return DB::table($table)->where([
+            ['tu_TypeId', '=', $type],
+            ['tu_SubTypeId', '=', $childType],
+            ['tu_pdi_index', '=', $pdi],
+        ])->select(['tu_SubCha'])->get();
     }
     
         /**
@@ -106,12 +155,16 @@ class DonghuangController extends Controller
      * @return array
      */
     protected function formatReal($data, $dptId, $prefix = 'rd_') {
+        if(!$data) {
+            return [];
+        }
         $surfix = config('device.surfix')[$dptId];
         $consta = config('device.consta')[$dptId];
         $desc = config('device.desc')[$dptId];
         $numField = $desc['num'];
         $unit = config('device.units')[$dptId];
         $result = [];
+        $data = (array)$data;
         foreach ($data as $item) {
             $num = $item->{$numField};
             $num = $num ? $num : 8;
@@ -159,4 +212,56 @@ class DonghuangController extends Controller
         }
         return $result;
     }
+    
+    /**
+     * 保存设备
+     * @param Request $request
+     * @return array
+     */
+    public function storeDevice(Request $request)
+    {
+       $data = $request->input();
+       $message = [   
+        'pdi_name.required' => '设备名称必须',
+        'pdi_name.max' => '设备名称不能超过64个字符',
+        
+        'pdi_code.required' => '设备编号必须',
+        'pdi_code.max' => '设备编号不能超过64个字符',
+        
+        'dpt_id.required' => '设备分类编号必须',
+        'dpt_id.integer' => '设备分类编号必须是数字',
+        'dpt_id.exists' => '设备分类不存在',
+        ];
+        $this->validate($request, [
+            'pdi_name' => 'required|max:64',
+            'pdi_code' => 'required|max:64',
+            'dpt_id' => 'required|integer|exists:t_devicetype,dt_typeid',
+        ], $message);
+       $data['Co_ID'] = $request->user()->Co_ID;
+       $ret = PriDeviceInfo::create($data);
+       
+       if($ret){
+           return ['status' => 1, 'msg'=>'添加成功'];
+       }else{
+           return ['status' => 0, 'msg'=>'添加失败'];
+       }
+    }
+    
+    /**
+     * 上传测试
+     * @param Request $request
+     */
+  public function store(Request $request)
+ {
+ 
+    $file=$request->file('logo');
+    // dd($file);
+    $content = file_get_contents($file->getRealPath());
+    //文件路径
+    $filepath = base_path().'/storage/upload/attach/'.date('YmdHis').'.png';
+    //提取base64字符
+    // $imgdata = substr($content,strpos($content,",") + 1);
+    file_put_contents($filepath,$content );
+
+ }
 }

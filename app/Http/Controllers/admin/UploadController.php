@@ -62,13 +62,17 @@ class UploadController extends Controller
         }
 
         //文件类型
-        //$mimeType = $file->getMimeType();
+        $mimeType = $file->getMimeType();
 
         // if($mimeType != 'image/png'){
         //     return new JsonResponse(['msg'=>'只能上传png格式的图片']);
         // }
         //扩展文件名
         $ext = $file->getClientOriginalExtension();
+        
+        if(!$ext) {
+            $ext = $mimeType? (explode('/', $mimeType)[1]): '';
+        }
         
         $exts = array_get($config, 'exts', []);
         
@@ -86,14 +90,20 @@ class UploadController extends Controller
 
         //上传文件
         $filename = uniqid().'.'.$ext;
-        $path =  'attach/'.$today.'/'.$filename;
+        $dir = array_get($config, 'folder', 'attach');
+        $path =  $dir.'/'.$today.'/'.$filename;
 //        $path = $file->storeAs(
 //            'attach/'.$today, $filename,array_get($config, 'folder', 'local')
 //        );
-        Storage::disk('upload')->put(
+        $ret = Storage::disk('upload')->put(
            $path,
             file_get_contents($file->getRealPath())
         );
+        if($ret && $field=='avatar') {
+            $user = $request->user();
+            $user->avatar =  $path;
+            $user->save();
+        }
         // $path = $file -> move(app_path().'/storage/uploads',$filename);
         return ['status'=>1,'msg'=>''
         ,'data'=>[
