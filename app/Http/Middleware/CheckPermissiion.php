@@ -6,7 +6,7 @@ use Closure;
 use Route;
 use Bouncer;
 use Illuminate\Auth\AuthenticationException;
-use ApiRoute;
+// use ApiRoute;
 
 class CheckPermissiion
 {
@@ -20,7 +20,7 @@ class CheckPermissiion
     public function handle($request, Closure $next, $guard=null)
     {
 
-        $name = $this->getPermissionName(ApiRoute::getCurrentRoute());
+        $name = $this->getPermissionName(Route::getCurrentRoute());
         if(!$guard) {
             $guard = 'web';
         }

@@ -38,8 +38,8 @@ class RouteServiceProvider extends ServiceProvider
     public function map(Router $router)
     {
         $this->mapWebRoutes($router);
-       // $this->mapApiRoutes($router);
-        $this->mapDingoRoutes($router);
+        $this->mapApiRoutes($router);
+       // $this->mapDingoRoutes($router);
         //
     }
 

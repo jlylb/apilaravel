@@ -168,7 +168,7 @@ class RoleController extends Controller
             if(empty($group)){
                 $group = $name;
             }
-            // $name = str_replace($group.'_', '' , $item->name);
+            // $name = str_replace($group.'_', '' , $item->name);array_get($item, 'title')
             $result[$group][]=['value'=>$name, 'label'=>array_get($item, 'title')];
         }
         return $result;

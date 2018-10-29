@@ -160,7 +160,7 @@ return [
         
         Barryvdh\Debugbar\ServiceProvider::class,
 
-        Dingo\Api\Provider\LaravelServiceProvider::class,
+       // Dingo\Api\Provider\LaravelServiceProvider::class,
 
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         

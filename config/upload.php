@@ -4,7 +4,7 @@ return [
     'field' => 'logo',
     'logo' => [
         'mimes' => 'jpeg,bmp,png',
-        'folder'=>'upload',
+        'folder'=>'logo',
         'size' => 2*1024*1024,
         'rules' =>'required|mimes:jpeg,bmp,png, image/png',
         'messages' => [
@@ -13,7 +13,7 @@ return [
     ],
     'Co_Logo' => [
         'mimes' => 'jpeg,bmp,png',
-        'folder'=>'upload',
+        'folder'=>'co_logo',
         'size' => 2*1024*1024,
         'rules' =>'required|mimes:jpeg,bmp,png',
         'messages' => [

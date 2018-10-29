@@ -43,8 +43,8 @@ Route::group([
 ], function() {
     
     Route::resource('users', 'UserController');
-    Route::get('user/roles/{user}', 'UserController@getRoles')->name('api.user.getRoles');
-    Route::put('user/roles', 'UserController@updateRoles')->name('api.user.updateRoles');
+    Route::get('user/roles/{user}', 'UserController@getRoles')->name('api.users.getRoles');
+    Route::put('user/roles', 'UserController@updateRoles')->name('api.users.updateRoles');
     Route::resource('roles', 'RoleController');
     Route::get('roles/{role}/ability', 'RoleController@getRoleAbilities')->name('api.roles.ability');
     Route::put('roles/{role}/ability', 'RoleController@saveRoleAbility')->name('api.roles.ability');
@@ -55,9 +55,9 @@ Route::group([
     Route::resource('company', 'CompanyController');
     Route::get('company/{company}/search', 'CompanyController@search')->name('api.company.search');
     Route::post('upload', 'UploadController@store')->name('api.upload.store');
-    Route::resource('notification', 'NotificationController');
-    Route::post('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread');
-    Route::post('notification/unreadall', 'NotificationController@unreadAll')->name('api.notification.unreadAll');
+//    Route::resource('notification', 'NotificationController');
+//    Route::post('notification/{notification}/unread', 'NotificationController@unread')->name('api.notification.unread');
+//    Route::post('notification/unreadall', 'NotificationController@unreadAll')->name('api.notification.unreadAll');
     
     Route::resource('devicetype', 'DevicetypeController');
     Route::resource('deviceinfo', 'DeviceinfoController');

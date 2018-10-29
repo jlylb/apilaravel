@@ -41,7 +41,10 @@ class HomeController extends Controller {
     public function genPermission() {
         foreach (Route::getRoutes() as $route) {
             $routeName = $route->getName();
-            if (strpos($routeName, 'notification') === false) {
+            if (strpos($routeName, 'notification') !== false) {
+                continue;
+            }
+            if (strpos($routeName, 'api') === false) {
                 continue;
             }
             $curPrefix = trim($route->getPrefix(), '/') ?: '';
@@ -49,14 +52,15 @@ class HomeController extends Controller {
             if (!$routeName) {
                 continue;
             }
+
             $routePath = $route->getPath();
             $title = str_replace('.', ' ', $routeName);
 
-            // var_dump($routeName, $routePath, $title);
+            $desc = config('ability');
 
             Bouncer::ability()->firstOrCreate([
                 'name' => $routeName,
-                'title' => $title,
+                'title' => isset($desc[$routeName])?$desc[$routeName]:$title,
                 'route_path' => '/' . trim(str_replace($curPrefix, '', $routePath), '/')
             ]);
         }

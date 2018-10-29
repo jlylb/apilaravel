@@ -32,11 +32,14 @@ class MonitorController extends Controller {
                 ->toArray();
         $province = [];
         $city = [];
+        $index = [];
         foreach ($peng as $v) {
             if ($v['Fid'] == 0) {
                 $province[] = ['value' => $v['AreaId'], 'label' => $v['AreaName']];
+                $index[$v['AreaId']] = 0;
             } else {
-                $city[$v['Fid']][] = ['value' => $v['AreaId'], 'label' => $v['AreaName'], 'cid' => $v['Co_ID']];
+                $index[$v['Fid']] += 1; 
+                $city[$v['Fid']][] = ['value' => $v['AreaId'], 'label' => $v['AreaName'], 'cid' => $v['Co_ID'], 'alias'=> $index[$v['Fid']].'号大棚'];
             }
         }
         $info = $this->getAreaDevices();
@@ -410,6 +413,7 @@ class MonitorController extends Controller {
         $result['fields'] = $fields;
         $result['name'] = $desc['name'];
         $result['surfix'] = $surfix;
+        $result['icon'] = array_get(config('device.monitor'), $dptId, null);
         return $result;
     }
     
