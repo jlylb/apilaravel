@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Area extends Model
 {
+    use \App\Models\Traits\Company;
+    
     protected $table = 'sy_area';
     
     protected $primaryKey = 'AreaId';

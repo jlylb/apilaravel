@@ -3,14 +3,29 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/dh.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DeviceinfoController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DonghuangController.php</file>
-            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/device.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UserController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/web.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/AreaController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/CompanyController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DataController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/routes/api.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/PermissionController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/database.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/MonitorController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/UploadController.php</file>
             <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/.env</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/app.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/AuthController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/DonghuangController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/ability.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/HomeController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Controllers/admin/RoleController.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Requests/Request.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Middleware/CheckPermissiion.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/Middleware/ScopeBouncer.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/config/device.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Providers/RouteServiceProvider.php</file>
+            <file>file:/D:/phpStudy/PHPTutorial/WWW/myblog/app/Http/traits/UserPrivilege.php</file>
         </group>
     </open-files>
 </project-private>

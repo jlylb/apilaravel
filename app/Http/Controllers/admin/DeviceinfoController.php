@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\PriDeviceInfo;
 use App\Http\traits\Utils;
+use App\Http\traits\UserPrivilege;
 
 class DeviceinfoController extends Controller
 {
-    use Utils;
+    use Utils, UserPrivilege;
     
     protected $message = [
              
@@ -108,8 +109,9 @@ class DeviceinfoController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->input();
+       $data = $request->input();
        $this->validateData($request);
+       $data['Co_ID'] = $request->user()->Co_ID;
        $ret = PriDeviceInfo::create($data);
        
        if($ret){
@@ -153,6 +155,11 @@ class DeviceinfoController extends Controller
        $deviceType = PriDeviceInfo::findOrFail($id);
        $data = $request->input();
        $this->validateData($request);
+       if(!$this->isSuper($request->user())){
+           if(isset($data['Co_ID'])){
+               unset($data['Co_ID']);
+           }
+       }
        $ret = $deviceType->update($data);
        
        if($ret){
@@ -163,13 +170,20 @@ class DeviceinfoController extends Controller
     }
     
     protected function validateData($request) {
-        $this->validate($request, [
+        $rules = [
             'pdi_name' => 'required|max:64',
             'pdi_code' => 'required|max:64',
             'dpt_id' => 'required|integer|exists:t_devicetype,dt_typeid',
             'AreaId' => 'required|integer',
-            'Co_ID' => 'required|integer|exists:t_companycnfo,Co_ID',
-        ], $this->message);
+        ];
+        
+        // $adminRule = [ 'Co_ID' => 'required|integer|exists:t_companycnfo,Co_ID' ];
+        $adminRule = [];
+        if($this->isSuper($request->user())){
+            $rules = array_merge($rules, $adminRule);
+        }
+        
+        $this->validate($request, $rules, $this->message);
     }
     /**
      * Remove the specified resource from storage.

@@ -22,12 +22,10 @@ class MonitorController extends Controller {
      * @return array
      */
     public function index(Request $request) {
-        $user = $request->user();
-        $companyId = $user->Co_ID;
-        $companyId = 1;
-        $peng = Area::where('Co_ID', '=', $companyId)
-//                ->where('Fid','>','0')
-                ->select(['AreaId', 'AreaName', 'Fid', 'Co_ID'])
+//        $user = $request->user();
+//        $companyId = $user->Co_ID;
+//        $companyId = 1;
+        $peng = Area::select(['AreaId', 'AreaName', 'Fid', 'Co_ID'])
                 ->get()
                 ->toArray();
         $province = [];
@@ -42,16 +40,19 @@ class MonitorController extends Controller {
                 $city[$v['Fid']][] = ['value' => $v['AreaId'], 'label' => $v['AreaName'], 'cid' => $v['Co_ID'], 'alias'=> $index[$v['Fid']].'号大棚'];
             }
         }
-        $info = $this->getAreaDevices();
         
-        return [ 
+        $isAreaDevice = $request->input('isArea', true);
+        
+        $info = [];
+        if($isAreaDevice) {
+            $info = $this->getAreaDevices();
+        }
+
+        return array_merge([ 
             'status' => 1, 
             'province' => $province, 
             'city' => $city, 
-            'deviceType' => $info['deviceType'], 
-            'device' => $info['device'],
-            'areaDevice' => $info['areaDevice']
-        ];
+        ], $info);
     }
 
     /**
@@ -199,9 +200,9 @@ class MonitorController extends Controller {
             $zhStart = Carbon::parse($sdate[0]);
             $zhEnd = Carbon::parse($sdate[1]);
             $days = $zhEnd->diffInDays($zhStart);
-            if ($days == 1) {
+            if ($days < 1) {
                 $searchType = 'hour';
-            } elseif ($days > 1 && $days <= 31) {
+            } elseif ($days >= 1 && $days <= 31) {
                 $searchType = 'day';
             } elseif ($days > 31) {
                 $searchType = 'month';
