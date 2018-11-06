@@ -12,6 +12,7 @@ return [
     | as required, but they're a perfect start for most applications.
     |
     */
+    'code_expire'=>2, //2 min
 
     'defaults' => [
         'guard' => 'web',

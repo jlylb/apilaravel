@@ -9,6 +9,8 @@ use App\Http\traits\UserPrivilege;
 use Hash;
 use JWTAuth;
 use Bouncer;
+use App\Userinfo;
+use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
 {
@@ -20,7 +22,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-       $this->middleware('auth:api', ['except' => ['login']]);
+       $this->middleware('auth:api', ['except' => ['login', 'sendCode', 'forgetPassword']]);
     }
 
     /**
@@ -184,5 +186,74 @@ class AuthController extends Controller
     
     protected function checkPwd($password,$srcPassword) {
         return md5(trim($password))===$srcPassword;
+    }
+    
+    //发送短信
+    protected function sendSms($phone) {
+        return true;
+    }
+    //生成验证码
+    protected function getVerifyCode($len=6) {
+        $start = str_pad(1, $len, 0);
+        $end = str_pad(9, $len, 9);
+        return mt_rand($start, $end);
+    }
+    
+    //发送验证码
+    public function sendCode(Request $request) {
+        $this->validate($request,[
+            'phone'=>'required|digits:11|regex:/^1[3578]\d{9}$/',
+        ]);
+        $phone = $request->input('phone');
+        $code = $this->getVerifyCode();
+        $ret = $this->sendSms($phone, $code);
+        if($ret) {
+            Cache::put('code:'.$phone, $code, config('auth.code_expire'));
+            return ['status'=>1, 'msg'=>'发送短信成功'];
+        }else{
+            return ['status'=>0, 'msg'=>'发送短信失败'];
+        }
+    }
+    
+    //检查验证码是否过期
+    protected function checkCodeExpire($phone) {
+        return Cache::get('code:'.$phone);
+    }
+    //检查验证码是否相等
+    protected function checkCodeEqual($phone, $code) {
+        return Cache::get('code:'.$phone)==$code;
+    }
+    //找回密码
+    public function forgetPassword(Request $request) {
+        $user = $this->user();
+        if($user) {
+           JWTAuth::parseToken()->invalidate(); 
+        }
+        $this->validate($request,[
+            'phone'=>'required|digits:11|regex:/^1[3578]\d{9}$/',
+            'code' => 'required|min:6',
+            'password' => 'required|min:6',
+        ]);
+        $code = $request->input('code');
+        $phone = $request->input('phone');
+        if(!$this->checkCodeExpire($phone)) {
+            return ['status'=>0, 'msg'=>'验证码已过期'];
+        }
+        if(!$this->checkCodeEqual($phone, $code)) {
+            return ['status'=>0, 'msg'=>'验证码输入错误'];
+        }
+        $userinfo = Userinfo::where('userphone', '=', trim($phone))->first();
+        if(!$userinfo) {
+           return ['status'=>0, 'msg'=>'手机号不存在'];
+        }
+        $muser = $userinfo->user;
+        $password = $request->input('password');
+        $muser->userpwd = $password;
+        if($muser->save()) {
+            return ['status'=>1, 'msg'=>'找回密码成功'];
+        }else{
+            return ['status'=>0, 'msg'=>'找回密码失败'];
+        }
+
     }
 }

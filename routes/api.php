@@ -29,6 +29,8 @@ Route::group([
     Route::get('auth/userinfo', 'AuthController@getUserInfo')->name('api.auth.getUserInfo');
     Route::put('auth/userinfo', 'AuthController@saveUserInfo')->name('api.auth.saveUserInfo');
     Route::put('auth/password', 'AuthController@modifyPassword')->name('api.auth.modifyPassword');
+    Route::post('auth/forgetpassword', 'AuthController@forgetPassword')->name('api.auth.forgetpassword');
+    Route::post('auth/sendcode', 'AuthController@sendCode')->name('api.auth.sendcode');
 
 });
 
