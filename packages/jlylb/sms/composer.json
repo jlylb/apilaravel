@@ -1,0 +1,17 @@
+{
+    "name": "jlylb/sms",
+    "description": "sms channel",
+    "authors": [
+        {
+            "name": "jlylb",
+            "email": "jlylb@126.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Jlylb\\Sms\\": "src/"
+        }
+    }
+}

@@ -11,6 +11,7 @@ use JWTAuth;
 use Bouncer;
 use App\Userinfo;
 use Illuminate\Support\Facades\Cache;
+use Notification;
 
 class AuthController extends Controller
 {
@@ -189,7 +190,13 @@ class AuthController extends Controller
     }
     
     //发送短信
-    protected function sendSms($phone) {
+    protected function sendSms($phone, $code) {
+        $invoice = [
+            'phone'=>$phone,
+            'content'=>'您好,当前验证码是'.$code,
+        ];
+        $when = \Carbon\Carbon::now()->addMinutes(1);
+        $ret = Notification::send($phone, (new \App\Notifications\Phone($invoice))->delay($when));
         return true;
     }
     //生成验证码

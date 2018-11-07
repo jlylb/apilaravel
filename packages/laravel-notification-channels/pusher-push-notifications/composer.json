@@ -1,0 +1,46 @@
+{
+    "name": "laravel-notification-channels/pusher-push-notifications",
+    "description": "Pusher native Push Notifications driver.",
+    "keywords": [
+        "pusher-push-notifications",
+        "laravel",
+        "pusher",
+        "notifications"
+    ],
+    "homepage": "https://github.com/LaravelNotificationChannels/pusher-push-notifications",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mohamed Said",
+            "email": "themsaid@gmail.com",
+            "homepage": "https://themsaid.com"
+        },
+        {
+            "name": "Marcel Pociot",
+            "email": "hello@marcelpociot.com",
+            "homepage": "http://marcelpociot.com"
+        },
+        {
+            "name": "Freek Van der Herten",
+            "email": "freek@spatie.be",
+            "homepage": "https://spatie.be"
+        },
+        {
+            "name": "Sebastian De Deyne",
+            "email": "sebastian@spatie.be",
+            "homepage": "https://sebastiandedeyne.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "pusher/pusher-php-server": "2.6.*"
+    },
+    "require-dev": {
+
+    },
+    "autoload": {
+        "psr-4": {
+            "NotificationChannels\\PusherPushNotifications\\": "src"
+        }
+    }
+}

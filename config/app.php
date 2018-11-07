@@ -168,7 +168,9 @@ return [
 
        // luoyangpeng\ActionLog\ActionLogServiceProvider::class,
        App\Pakages\Log\Providers\CustomLogServiceProvider::class,
-
+        
+       Jlylb\Sms\SmsServiceProvider::Class,
+        
     ],
 
     /*

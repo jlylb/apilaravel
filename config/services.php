@@ -34,5 +34,11 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+    'sms' => [
+        'username' => 'sms1',
+        'userpass' => '123456',
+        'url' => 'http://www.baidu.com',
+        'sender'=> 'jlylb',
+    ],
 
 ];
