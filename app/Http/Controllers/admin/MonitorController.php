@@ -15,7 +15,11 @@ use Carbon\Carbon;
  * @author litc
  */
 class MonitorController extends Controller {
-
+    
+    // 1=监控类型 
+    const MONITOR_TYPE = 1;
+    // 2=控制类型
+    const CONTROL_TYPE = 2;
     /**
      * 获取大棚
      * @param Request $request
@@ -43,9 +47,12 @@ class MonitorController extends Controller {
         
         $isAreaDevice = $request->input('isArea', true);
         
+        //类型 1=监控 2=控制  
+        $mType = $request->input('mtype', self::MONITOR_TYPE);
+                
         $info = [];
         if($isAreaDevice) {
-            $info = $this->getAreaDevices();
+            $info = $this->getAreaDevices($mType);
         }
 
         return array_merge([ 
@@ -54,12 +61,24 @@ class MonitorController extends Controller {
             'city' => $city, 
         ], $info);
     }
+    
+    //获取类型
+    protected function getType($mType) {
+        if($mType === self::MONITOR_TYPE){
+            $deviceTypeIds = config('device.monitor');
+        }else{
+            $deviceTypeIds = config('device.control');
+        }
+        return $deviceTypeIds;
+    }
 
     /**
      * 获取公司所有区域设备
      */
-    public function getAreaDevices() {
-        $deviceTypeIds = config('device.monitor');
+    public function getAreaDevices($mType) {
+        
+        $deviceTypeIds = $this->getType($mType);
+        
         $devices = PriDeviceInfo::whereIn('dpt_id', array_keys($deviceTypeIds))
                 ->with(['types' => function($query) {
                         $query->select(['dt_typename', 'dt_typememo', 'dt_typeid']);
@@ -69,7 +88,7 @@ class MonitorController extends Controller {
                 ->toArray();
         $deviceType = [];
         $device = [];
-        $typeIcons = config('device.monitor');
+        $typeIcons = $deviceTypeIds;
         $areaDevice = [];
         foreach ($devices as $v) {
             $deviceType[$v['AreaId']][$v['dpt_id']] = ['value' => $v['dpt_id'], 'label' => $v['types']['dt_typememo']];
@@ -98,14 +117,16 @@ class MonitorController extends Controller {
      * 获取一个区域的所有设备
      */
     public function getDevicesByArea(Request $request) {
+        
+        $mType = $request->input('mtype', self::MONITOR_TYPE);
+        $deviceTypeIds = $this->getType($mType);
+        
         $deviceItem = null;
 
         $areaId = $request->input('areaId');
         if(!$areaId) {
             return $deviceItem;
         }
-
-        $deviceTypeIds = config('device.monitor');
 
         $devices = PriDeviceInfo::whereIn('dpt_id', array_keys($deviceTypeIds))
                 ->where('AreaId', '=', $areaId)

@@ -66,11 +66,9 @@ class ControlController extends Controller
      */
     public function device(Request $request) {
         $user = $this->user();
-        $companyId = $user->Co_ID;
         $areaId = $request->input('value');
         $deviceTypeIds = config('device.control');
-        $device = PriDeviceInfo::where('Co_ID', '=', $companyId)
-                ->where('AreaId','=',$areaId)
+        $device = PriDeviceInfo::where('AreaId','=',$areaId)
                 ->with(['types'=>function($query){
                     $query->select(['dt_typename', 'dt_typememo', 'dt_typeid']);
                 }])
