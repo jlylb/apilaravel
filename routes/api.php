@@ -98,6 +98,8 @@ Route::group([
     Route::post('donghuang/device', 'DonghuangController@device')->name('api.donghuang.device');
     Route::post('donghuang/realdata', 'DonghuangController@realData')->name('api.donghuang.realdata');
     Route::post('donghuang/storedevice', 'DonghuangController@storeDevice')->name('api.donghuang.storeDevice');
+    
+    Route::get('dashboard', 'IndexController@index')->name('api.index.index');
 //    Route::post('donghuang/store', 'DonghuangController@store')->name('api.donghuang.store');
 });
 

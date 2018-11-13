@@ -78,12 +78,17 @@ class MonitorController extends Controller {
     public function getAreaDevices($mType) {
         
         $deviceTypeIds = $this->getType($mType);
-        
+        $table = 't_prideviceinfo.';
+        $wtable = 't_phpwarn';
         $devices = PriDeviceInfo::whereIn('dpt_id', array_keys($deviceTypeIds))
                 ->with(['types' => function($query) {
                         $query->select(['dt_typename', 'dt_typememo', 'dt_typeid']);
                     }])
-                ->select(['AreaId', 'dpt_id', 'pdi_name', 'pdi_index'])
+                ->leftJoin($wtable, function($join)use($table, $wtable){
+                    $join->on($wtable.'.pdi_devid', '=', $table.'pdi_index');
+                           // ->where($wtable.'.pdi_areaid', '=', $table.'AreaId');
+                })
+                ->select([$table.'AreaId', $table.'dpt_id', $table.'pdi_name', $table.'pdi_index', $wtable.'.pdi_index as warn_index',])
                 ->get()
                 ->toArray();
         $deviceType = [];
@@ -105,6 +110,7 @@ class MonitorController extends Controller {
                 'icon' => $typeIcons[$v['dpt_id']],
                 'areaId' => $v['AreaId'],
                 'device_type' => $v['dpt_id'],
+                'warn_index' => $v['warn_index'],
             ];
         }
         foreach ($deviceType as $k => $v) {
@@ -269,7 +275,7 @@ class MonitorController extends Controller {
      * @param int $typeId
      * @return array
      */
-    protected function getFields($typeId, $searchType = 'hour', $num = 10, $prefix = 'hd_', $dateField = 'rd_updatetime') {
+    protected function getFields($typeId, $searchType = 'hour', $num = 10, $prefix = 'hd_', $dateField = 'hd_datetime') {
         $surfix = config('device.surfix');
         $field = $surfix[$typeId];
         $fields = ['pdi_index'];
@@ -395,6 +401,7 @@ class MonitorController extends Controller {
             // $item['params'] = $params;
             $result['items'] = $params;
             $result['unit'] = $unit;
+            $result['fieldDesc'] = $surfix;
 
             $result['icons'] = config('device.icons');
         }
@@ -421,7 +428,7 @@ class MonitorController extends Controller {
             for ($i = 1; $i <= $num; $i++) {
                 foreach ($surfix as $k => $v) {
                     $keyPrefix = $prefix . $k . $i;
-                    $params[$k][$k . $i][$item->rd_updatetime] = $item->$keyPrefix;
+                    $params[$k][$k . $i][$item->hd_datetime] = $item->$keyPrefix;
                 }
             }
             $result['pdi_index'] = $item->pdi_index;

@@ -31,11 +31,19 @@ class AreaController extends Controller
         if(!empty($name)) {
             $query->where('AreaName', 'like', trim($name).'%');
         }
-        $query->from('sy_area as a');
-        $query->leftjoin('t_companycnfo as b', 'a.Co_ID', '=', 'b.Co_ID');
-        $query->select(['a.*','b.Co_Name']);
-        $query->with(['parentAreaName' => function($query){
-             $query->select(['AreaId','AreaName','Fid']);
+        $all = $request->input('total', false);
+        if($all) {
+            $query->where('Fid', '>', 0);
+         }
+        $aid = $request->input('aid', '');
+        if($aid) {
+            $query->where('Fid', '=', $aid);
+         }
+        $query->from('sy_area');
+        $query->leftjoin('t_companycnfo as b', 'sy_area.Co_ID', '=', 'b.Co_ID');
+        $query->select(['sy_area.*','b.Co_Name']);
+        $query->with(['parentAreaName' => function($query) use($request){
+            $query->select(['AreaId','AreaName','Fid']);
         }]);
         $users = $query -> paginate($perPage);
         

@@ -37,7 +37,7 @@ return [
         80 => [  'envitemp' => '温度', 'envihumi' => '湿度', ], 
         81 => [ 'Concentration'=>'浓度', ], 
         83 => [ 'LightIntensity'=>'光照度', ], 
-        84 => [ 'Soiltemp' => '温度', 'Soilhumi' => '湿度', 'SoilCond'=>' 电导率'], 
+        84 => [ 'Soiltemp' => '温度', 'Soilhumi' => '湿度', 'SoilCond'=>'电导率'], 
         82 => [ 'LevelValue' => '液位' ],
         85 => [ 'SoilPH' => '酸碱度' ],
         33 => [  'envitemp' => '温度', 'envihumi' => '湿度', ],
@@ -73,14 +73,15 @@ return [
         33 => [  'envitemp' => '°C', 'envihumi' => '%RH', ],
     ],
     'icons'=>[
-        'envitemp' => 'wendu-item-circle', 
-        'envihumi' => 'shidu-item-circle',
+        'envitemp' => 'wendu-item', 
+        'envihumi' => 'shidu-item',
         'Concentration'=>'co2',
         'LightIntensity'=>'light',
         'Soiltemp' => 'wendu-item', 
         'Soilhumi' => 'shidu-item',
         'LevelValue' => 'liquid',
-        'SoilPH' => 'soilph'
+        'SoilPH' => 'soil-ph',
+        'SoilCond' => 'soil-cond'
     ],
     'map_models' => [
         80 => [ 'real' => '\App\RealAir', 'history' => '\App\Air' ], 

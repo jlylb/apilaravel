@@ -33,7 +33,7 @@ class HomeController extends Controller {
         $ret = Bouncer::role()->where('name', '=', 'company_admin')->first();
         return view('home');
     }
-
+    
     public function welcome() {
         return view('welcome');
     }
