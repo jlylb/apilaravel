@@ -60,6 +60,7 @@ Route::group([
     Route::resource('post','PostController');
     Route::resource('category','CategoryController');
     Route::resource('carousel','CarouselController');
+    Route::resource('flash','FlashController');
 
 });
 

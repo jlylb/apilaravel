@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Flash extends Model
 {
     protected $fillable = [
-        'name', 'path', 'desc', 'carousel_id'
+        'name', 'path', 'desc', 'carousels_id'
     ];
 }
