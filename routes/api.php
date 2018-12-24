@@ -61,6 +61,8 @@ Route::group([
     Route::resource('category','CategoryController');
     Route::resource('carousel','CarouselController');
     Route::resource('flash','FlashController');
+    Route::resource('comment','CommentController');
+    Route::resource('tag','TagController');
 
 });
 
