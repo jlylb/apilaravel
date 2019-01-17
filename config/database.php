@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => 'wushui',
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +65,19 @@ return [
             'strict' => false,
             'engine' => null,
         ],
-
+        'wushui' => [
+            'driver' => 'mysql',
+            'host' => 'localhost',
+            'port' => '3306',
+            'database' => 'wushui',
+            'username' => 'root',
+            'password' => '123456',
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', 'localhost'),
